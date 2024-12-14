@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Loader2, MapPin } from 'lucide-react';
 
 const LocationComponent = () => {
