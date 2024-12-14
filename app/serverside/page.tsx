@@ -1,5 +1,4 @@
 import { headers } from "next/headers";
-import geoip from "geoip-lite";
 
 export default async function Page() {
   const headersList = await headers();
