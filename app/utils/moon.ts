@@ -72,6 +72,7 @@ export function getFavorableMoonDatesInRange(coords: Coordinates, startDate: Dat
                     moonsetTime: SunCalc.getMoonTimes(currentDate.toDate(), coords.lat, coords.lon).set,
                     sunsetTime: SunCalc.getTimes(currentDate.toDate(), coords.lat, coords.lon).sunset,
                 };
+                console.log(favorableMoon);
 
                 const moonriseTimeHHMM = favorableMoon.moonriseTime.toTimeString().slice(0, 5);
                 const moonsetTimeHHMM = favorableMoon.moonsetTime.toTimeString().slice(0, 5);
