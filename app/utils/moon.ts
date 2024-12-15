@@ -4,7 +4,6 @@ import { Coordinates } from '../types/Coordinates';
 import { FavorableMoon } from '../types/FavorableMoon';
 import { ZenithResult } from '../types/Zenith';
 import { DateTime } from "luxon";
-import { moonposition, solar } from 'astronomia';
 
 
 function getMoonIllumination(date: Date): number {
