@@ -13,9 +13,9 @@ export default async function Page() {
 
   // Default
   if (!latitude || !longitude || !city || !region) {
-    latitude = "33.1954333";
-    longitude = "-116.3885842";
-    city = "Borrego Springs";
+    latitude = "33.0893";
+    longitude = "-117.1153";
+    city = "Escondido";
     region = "CA";
     timezone = "America/Los_Angeles";
   }
