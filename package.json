@@ -12,6 +12,7 @@
     "geoip-lite": "^1.4.10",
     "lucide-react": "^0.468.0",
     "moment": "^2.30.1",
+    "moment-timezone": "^0.5.46",
     "next": "15.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

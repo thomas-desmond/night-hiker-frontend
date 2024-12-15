@@ -9,12 +9,15 @@ export default async function Page() {
   let longitude = headersList.get("x-vercel-ip-longitude");
   let city = headersList.get("x-vercel-ip-city");
   let region = headersList.get("x-vercel-ip-country-region");
+  let timezone = headersList.get("x-vercel-ip-timezone");
 
+  // Default
   if (!latitude || !longitude || !city || !region) {
     latitude = "33.1954333";
     longitude = "-116.3885842";
     city = "Borrego Springs";
     region = "CA";
+    timezone = "America/Los_Angeles";
   }
 
   const startDate = new Date(2025, 0, 1); // January 1, 2025
@@ -24,7 +27,7 @@ export default async function Page() {
     lat: parseFloat(latitude as string),
     lon: parseFloat(longitude),
   };
-  const favorableMoonDates = getFavorableMoonDatesInRange(coords, startDate, endDate);
+  const favorableMoonDates = getFavorableMoonDatesInRange(coords, startDate, endDate, timezone);
 
   return (
     <div>
