@@ -1,90 +1,53 @@
-'use client';
+import { headers } from "next/headers";
+import { getFavorableMoonDatesInRange } from "./utils/moon";
+import { Coordinates } from "./types/Coordinates";
 
-import { useState } from 'react';
-import { Loader2, MapPin } from 'lucide-react';
 
-const LocationComponent = () => {
-  const [location, setLocation] = useState<{ latitude: number, longitude: number, accuracy: number } | null>(null);
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+export default async function Page() {
+  const headersList = await headers();
 
-  const getLocation = () => {
-    setLoading(true);
-    setError("");
+  let latitude = headersList.get("x-vercel-ip-latitude");
+  let longitude = headersList.get("x-vercel-ip-longitude");
+  let city = headersList.get("x-vercel-ip-city");
+  let region = headersList.get("x-vercel-ip-country-region");
 
-    // Check if geolocation is supported
-    if (!navigator.geolocation) {
-      setError('Geolocation is not supported by your browser');
-      setLoading(false);
-      return;
-    }
+  if (!latitude || !longitude || !city || !region) {
+    latitude = "33.1954333";
+    longitude = "-116.3885842";
+    city = "Borrego Springs";
+    region = "CA";
+  }
 
-    navigator.geolocation.getCurrentPosition(
-      // Success callback
-      (position) => {
-        setLocation({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-          accuracy: position.coords.accuracy
-        });
-        setLoading(false);
-      },
-      // Error callback
-      (error) => {
-        switch (error.code) {
-          case error.PERMISSION_DENIED:
-            setError('Permission to access location was denied');
-            break;
-          case error.POSITION_UNAVAILABLE:
-            setError('Location information is unavailable');
-            break;
-          case error.TIMEOUT:
-            setError('Request to get location timed out');
-            break;
-          default:
-            setError('An unknown error occurred');
-        }
-        setLoading(false);
-      },
-      // Options
-      {
-        enableHighAccuracy: true,
-        timeout: 5000,
-        maximumAge: 0
-      }
-    );
+  const startDate = new Date(2025, 0, 1); // January 1, 2025
+  const endDate = new Date(2025, 0, 31); // January 31, 2025
+
+  const coords: Coordinates = {
+    lat: parseFloat(latitude as string),
+    lon: parseFloat(longitude),
   };
+  const favorableMoonDates = getFavorableMoonDatesInRange(coords, startDate, endDate);
 
   return (
-    <div className="p-4 max-w-md mx-auto">
-      <button
-        onClick={getLocation}
-        disabled={loading}
-        className="flex items-center justify-center gap-2 w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 disabled:bg-blue-300"
-      >
-        {loading ? (
-          <Loader2 className="animate-spin" size={20} />
-        ) : (
-          <MapPin size={20} />
-        )}
-        {loading ? 'Getting Location...' : 'Get My Location'}
-      </button>
-
-      {error && (
-        <div className="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
-          {error}
-        </div>
-      )}
-
-      {location && (
-        <div className="mt-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded">
-          <p><strong>Latitude:</strong> {location.latitude}</p>
-          <p><strong>Longitude:</strong> {location.longitude}</p>
-          <p><strong>Accuracy:</strong> {location.accuracy} meters</p>
-        </div>
-      )}
+    <div>
+      <h1 className="font-bold">Request Information</h1>
+      <p>Lat: {latitude}</p>
+      <p>Long: {longitude}</p>
+      <p>City: {city}</p>
+      <p>Region: {region}</p>
+      <br />
+      <p className="font-bold">Favorable Moon Dates:</p>
+      <ul>
+        {favorableMoonDates.map((favorableMoon) => (
+          <div key={favorableMoon.date.toDateString()}>
+            <li>{favorableMoon.date.toDateString()}</li>
+            <li>Moon Illumination {Math.round(favorableMoon.illuminationPercentage)}%</li>
+            <li>Moon rise time: {favorableMoon.moonriseTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })}</li>
+            <li>Sunset time:{favorableMoon.sunsetTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })}</li>
+            <li>Zenith time:{favorableMoon.zenithTime?.time.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })}</li>
+            <br />
+          </div>
+        ))}
+      </ul>
     </div>
   );
-};
-
-export default LocationComponent;
+}

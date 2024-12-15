@@ -24,16 +24,58 @@ function isMoonVisible(coords: Coordinates, date: Date): boolean {
     return false;
 }
 
-export function findMoonIlluminationDates(coords: Coordinates, startDate: Date, endDate: Date, minIllumination: number = 80): Date[] {
+function findMoonZenith(coords: Coordinates, date: Date, startTime: string, endTime: string): ZenithResult {
+    const startMoment = moment(date).set({ hour: parseInt(startTime.split(':')[0]), minute: parseInt(startTime.split(':')[1]) });
+    let endMoment = moment(date).set({ hour: parseInt(endTime.split(':')[0]), minute: parseInt(endTime.split(':')[1]) });
+
+    // If end time is earlier than start time, add one day to end time
+    if (endMoment.isBefore(startMoment)) {
+        endMoment.add(1, 'day');
+    }
+
+    let highestAltitude = -Infinity;
+    let zenithTime: Date = startMoment.toDate();
+
+    let currentTime = startMoment.clone();
+
+    while (currentTime.isSameOrBefore(endMoment)) {
+        const moonPosition = SunCalc.getMoonPosition(currentTime.toDate(), coords.lat, coords.lon);
+        if (moonPosition.altitude > highestAltitude) {
+            highestAltitude = moonPosition.altitude;
+            zenithTime = currentTime.toDate();
+        }
+        currentTime.add(1, 'minute'); // Adjust the interval as needed
+    }
+
+    return {
+        time: zenithTime,
+        altitude: highestAltitude
+    };
+}
+
+export function getFavorableMoonDatesInRange(coords: Coordinates, startDate: Date, endDate: Date, minIllumination: number = 80): FavorableMoon[] {
     let currentDate = moment(startDate);
     const endMoment = moment(endDate);
-    const dateRange: Date[] = [];
+    const dateRange: FavorableMoon[] = [];
 
     while (currentDate.isSameOrBefore(endMoment)) {
         const illumination = getMoonIllumination(currentDate.toDate());
         if (illumination >= minIllumination) {
             if (isMoonVisible(coords, currentDate.toDate())) {
-                dateRange.push(currentDate.toDate());
+                let favorableMoon: FavorableMoon = {
+                    date: currentDate.toDate(),
+                    illuminationPercentage: illumination,
+                    moonriseTime: SunCalc.getMoonTimes(currentDate.toDate(), coords.lat, coords.lon).rise,
+                    moonsetTime: SunCalc.getMoonTimes(currentDate.toDate(), coords.lat, coords.lon).set,
+                    sunsetTime: SunCalc.getTimes(currentDate.toDate(), coords.lat, coords.lon).sunset,
+                };
+
+                const moonriseTimeHHMM = favorableMoon.moonriseTime.toTimeString().slice(0, 5);
+                const moonsetTimeHHMM = favorableMoon.moonsetTime.toTimeString().slice(0, 5);
+                // TODO: This is time consuming, consider optimizing
+                favorableMoon.zenithTime = findMoonZenith(coords, currentDate.toDate(), moonriseTimeHHMM, moonsetTimeHHMM);
+                
+                dateRange.push(favorableMoon);
             }
         }
         currentDate.add(1, 'days');
@@ -41,20 +83,3 @@ export function findMoonIlluminationDates(coords: Coordinates, startDate: Date, 
 
     return dateRange;
 }
-
-// export default {
-//     async fetch(request): Promise<Response> {
-//         const coords: Coordinates = { lat: 33.1954333, lon: -116.3885842 };
-//         const startDate = new Date(2025, 0, 1); // January 1, 2023
-//         const endDate = new Date(2025, 0, 31); // December 31, 2023
-
-//         const dates = findMoonIlluminationDates(coords, startDate, endDate);
-
-//         // Print the results
-//         console.log(`Moon visibility dates in 2025:`);
-//         dates.forEach((date) => {
-//             console.log(moment(date).format('YYYY-MM-DD'));
-//         });
-//         return new Response(JSON.stringify(dates));
-//     },
-// };
