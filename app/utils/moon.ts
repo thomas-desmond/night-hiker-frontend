@@ -20,8 +20,9 @@ function isMoonVisible(coords: Coordinates, date: Date, timezone: string): boole
         return false;
     }
 
-    const sunset = moment.tz(sunTimes.sunset, timezone).toDate();
-    const moonrise = moment.tz(moonTimes.rise, timezone).toDate();
+   
+    const sunset =  DateTime.fromISO(sunTimes.sunset.toISOString(), { zone: timezone }).toJSDate();
+    const moonrise =  DateTime.fromISO(moonTimes.rise.toISOString(), { zone: timezone }).toJSDate();
 
     const moonriseMinutesBeforeSunset = (moonrise.getTime() - sunset.getTime()) / (1000 * 60);
     if (moonriseMinutesBeforeSunset < 0 && moonriseMinutesBeforeSunset > -400) return true; // moonrise is before sunset and no more than 400 minutes before sunset
