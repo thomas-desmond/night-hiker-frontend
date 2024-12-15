@@ -4,7 +4,6 @@ import { Coordinates } from "../types/Coordinates";
 import { FavorableMoon } from "../types/FavorableMoon";
 import { ZenithResult } from "../types/Zenith";
 import { DateTime } from "luxon";
-import { Moon } from "lucide-react";
 
 function getMoonIllumination(date: Date): number {
   const moonIllumination = SunCalc.getMoonIllumination(date);
