@@ -4,10 +4,12 @@ import { Coordinates } from '../types/Coordinates';
 import { FavorableMoon } from '../types/FavorableMoon';
 import { ZenithResult } from '../types/Zenith';
 import { DateTime } from "luxon";
+import { moonposition, solar } from 'astronomia';
+
 
 function getMoonIllumination(date: Date): number {
     const moonIllumination = SunCalc.getMoonIllumination(date);
-    return moonIllumination.fraction * 100; // Convert to percentage
+    return moonIllumination.fraction * 100; // Convert tnpm i --save-dev @types/astronomiao percentage
 }
 
 function isMoonVisible(coords: Coordinates, date: Date, timezone: string): boolean {
@@ -20,18 +22,52 @@ function isMoonVisible(coords: Coordinates, date: Date, timezone: string): boole
         return false;
     }
    
-    const sunset =  DateTime.fromISO(sunTimes.sunset.toISOString(), { zone: timezone })
-    const moonrise =  DateTime.fromISO(moonTimes.rise.toISOString(), { zone: timezone })
+    const sunset =  DateTime.fromISO(sunTimes.sunset.toISOString(), { zone: timezone }).toJSDate()
+    const moonrise =  DateTime.fromISO(moonTimes.rise.toISOString(), { zone: timezone }).toJSDate()
 
-    
-    const diffInMinutes = moonrise.diff(sunset, 'minutes').as('minutes');
-    console.log('sunset', sunset.toISO(),  '\nmoonrise', moonrise.toISO()," ", diffInMinutes)
+    const newSunset = moment(sunset).subtract(8, 'hour').toDate()
+    const newMoonrise =  moment(moonrise).subtract(8, 'hour').toDate()
+
+    const moonriseMinutesBeforeSunset = (newMoonrise.getTime() - newSunset.getTime()) / (1000 * 60);
+    if (moonriseMinutesBeforeSunset < 0 && moonriseMinutesBeforeSunset > -400) return true; // moonrise is before sunset and no more than 400 minutes before sunset
+
+    // const diffInMinutes = moonrise.diff(sunset, 'minutes').as('minutes');
+    // console.log('sunset', sunset.toISO(),  '\nmoonrise', moonrise.toISO()," ", diffInMinutes)
 
     // const moonriseMinutesBeforeSunset = (moonrise.getTime() - sunset.getTime()) / (1000 * 60);
-    if (diffInMinutes < 0 && diffInMinutes > -400) return true; // moonrise is before sunset and no more than 400 minutes before sunset
+    // if (diffInMinutes < 0 && diffInMinutes > -400) return true; // moonrise is before sunset and no more than 400 minutes before sunset
 
     return false;
 }
+
+// function isMoonVisible(coords: Coordinates, date: Date, timezone: string): boolean {
+//     const currentTimeAtB = DateTime.fromISO(date.toISOString(), { zone: timezone });
+
+//     // Calculate the sun's position
+//     const sunPos = solar.apparentPosition(currentTimeAtB.toJSDate(), coords.lat, coords.lon);
+
+//     // Calculate the moon's position
+//     const moonPos = moonposition.position(currentTimeAtB.toJSDate());
+//     const moonTimes = {
+//         rise: moonPos.rise(coords.lat, coords.lon),
+//         set: moonPos.set(coords.lat, coords.lon),
+//     };
+
+//     if (!moonTimes.rise || !moonTimes.set) {
+//         return false;
+//     }
+
+//     const sunset = DateTime.fromISO(sunPos.sunset.toISOString(), { zone: timezone });
+//     const moonrise = DateTime.fromISO(moonTimes.rise.toISOString(), { zone: timezone });
+//     sunset
+
+//     const diffInMinutes = moonrise.diff(sunset, 'minutes').as('minutes');
+//     console.log('sunset', sunset.toISO(), '\nmoonrise', moonrise.toISO(), " ", diffInMinutes);
+
+//     if (diffInMinutes < 0 && diffInMinutes > -400) return true; // moonrise is before sunset and no more than 400 minutes before sunset
+
+//     return false;
+// }
 
 function findMoonZenith(coords: Coordinates, date: Date, startTime: string, endTime: string, timezone: string): ZenithResult {
     const startMoment =  moment.tz(date, timezone).set({ hour: parseInt(startTime.split(':')[0]), minute: parseInt(startTime.split(':')[1]) });

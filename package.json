@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "astronomia": "^4.1.1",
     "geoip-lite": "^1.4.10",
     "lucide-react": "^0.468.0",
     "luxon": "^3.5.0",
