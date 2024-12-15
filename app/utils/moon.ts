@@ -19,23 +19,26 @@ function isMoonVisible(
   const sunTimes = SunCalc.getTimes(date, coords.lat, coords.lon);
   const moonTimes = SunCalc.getMoonTimes(date, coords.lat, coords.lon);
 
-  const dateTime = DateTime.now().setZone(timezone);
-  const offsetInHours = dateTime.offset / 60;
-  console.log("RISEEEE ", moonTimes.rise);
-  const moonriseHours = moonTimes.rise.getHours();
+  //   const dateTime = DateTime.now().setZone(timezone);
+  //   const offsetInHours = dateTime.offset / 60;
+  //   console.log("RISEEEE ", moonTimes.rise);
+  //   const moonriseHours = moonTimes.rise.getHours();
 
-  let adjustDay = false;
-  if (moonriseHours - offsetInHours < 0) {
-    adjustDay = true;
-  }
+  //   let adjustDay = false;
+  //   if (moonriseHours - offsetInHours < 0) {
+  //     adjustDay = true;
+  //   }
 
   // 3. Convert sunset and moonrise to local timezone
   const sunsetLocal = DateTime.fromJSDate(sunTimes.sunset).setZone(timezone);
   let moonriseLocal = DateTime.fromJSDate(moonTimes.rise).setZone(timezone);
 
-  if (adjustDay) {
-    moonriseLocal = moonriseLocal.minus({ days: 1 });
-  }
+  const adjustDay = moonriseLocal.day !== sunsetLocal.day;
+
+
+if (adjustDay) {
+    moonriseLocal = moonriseLocal.set({ day: sunsetLocal.day });
+}
 
   console.log(
     "sunset",
