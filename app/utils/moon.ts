@@ -3,6 +3,7 @@ import SunCalc from 'suncalc';
 import { Coordinates } from '../types/Coordinates';
 import { FavorableMoon } from '../types/FavorableMoon';
 import { ZenithResult } from '../types/Zenith';
+import { DateTime } from "luxon";
 
 function getMoonIllumination(date: Date): number {
     const moonIllumination = SunCalc.getMoonIllumination(date);
@@ -10,10 +11,10 @@ function getMoonIllumination(date: Date): number {
 }
 
 function isMoonVisible(coords: Coordinates, date: Date, timezone: string): boolean {
-    console.log(date.toDateString());
+    const currentTimeAtB = DateTime.fromISO(date.toISOString(), { zone: timezone })
 
-    const sunTimes = SunCalc.getTimes(date, coords.lat, coords.lon);
-    const moonTimes = SunCalc.getMoonTimes(date, coords.lat, coords.lon);
+    const sunTimes = SunCalc.getTimes(currentTimeAtB.toJSDate(), coords.lat, coords.lon);
+    const moonTimes = SunCalc.getMoonTimes(currentTimeAtB.toJSDate(), coords.lat, coords.lon);
 
     if (!moonTimes.rise || !moonTimes.set) {
         return false;
