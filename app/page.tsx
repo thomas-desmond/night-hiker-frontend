@@ -1,6 +1,7 @@
 import { headers } from "next/headers";
 import { getFavorableMoonDatesInRange } from "./utils/moon";
 import { Coordinates } from "./types/Coordinates";
+import { DateTime } from "luxon";
 
 export default async function Page() {
   const headersList = await headers();
@@ -28,7 +29,7 @@ export default async function Page() {
     lon: parseFloat(longitude),
   };
   const favorableMoonDates = getFavorableMoonDatesInRange(coords, startDate, endDate, timezone as string);
-
+  // DateTime.fromJSDate(sunTimes.sunset).setZone(timezone);
   return (
     <div>
       <h1 className="font-bold">Request Information</h1>
@@ -43,9 +44,9 @@ export default async function Page() {
           <div key={favorableMoon.date.toDateString()}>
             <li>{favorableMoon.date.toDateString()}</li>
             <li>Moon Illumination {Math.round(favorableMoon.illuminationPercentage)}%</li>
-            <li>Moon rise time: {favorableMoon.moonriseTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })}</li>
-            <li>Sunset time:{favorableMoon.sunsetTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })}</li>
-            <li>Zenith time:{favorableMoon.zenithTime?.time.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })}</li>
+            <li>Moon rise time: {DateTime.fromJSDate(favorableMoon.moonriseTime).setZone(timezone as string).toJSDate().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</li>
+            <li>Sunset time: {DateTime.fromJSDate(favorableMoon.sunsetTime).setZone(timezone as string).toJSDate().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</li>
+            <li>Zenith time: {DateTime.fromJSDate(favorableMoon.zenithTime?.time as Date).setZone(timezone as string).toJSDate().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</li>
             <br />
           </div>
         ))}
