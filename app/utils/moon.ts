@@ -1,6 +1,8 @@
 import moment from 'moment';
 import SunCalc from 'suncalc';
 import { Coordinates } from '../types/Coordinates';
+import { FavorableMoon } from '../types/FavorableMoon';
+import { ZenithResult } from '../types/Zenith';
 
 function getMoonIllumination(date: Date): number {
     const moonIllumination = SunCalc.getMoonIllumination(date);
@@ -26,7 +28,7 @@ function isMoonVisible(coords: Coordinates, date: Date): boolean {
 
 function findMoonZenith(coords: Coordinates, date: Date, startTime: string, endTime: string): ZenithResult {
     const startMoment = moment(date).set({ hour: parseInt(startTime.split(':')[0]), minute: parseInt(startTime.split(':')[1]) });
-    let endMoment = moment(date).set({ hour: parseInt(endTime.split(':')[0]), minute: parseInt(endTime.split(':')[1]) });
+    const endMoment = moment(date).set({ hour: parseInt(endTime.split(':')[0]), minute: parseInt(endTime.split(':')[1]) });
 
     // If end time is earlier than start time, add one day to end time
     if (endMoment.isBefore(startMoment)) {
@@ -36,7 +38,7 @@ function findMoonZenith(coords: Coordinates, date: Date, startTime: string, endT
     let highestAltitude = -Infinity;
     let zenithTime: Date = startMoment.toDate();
 
-    let currentTime = startMoment.clone();
+    const currentTime = startMoment.clone();
 
     while (currentTime.isSameOrBefore(endMoment)) {
         const moonPosition = SunCalc.getMoonPosition(currentTime.toDate(), coords.lat, coords.lon);
@@ -47,14 +49,15 @@ function findMoonZenith(coords: Coordinates, date: Date, startTime: string, endT
         currentTime.add(1, 'minute'); // Adjust the interval as needed
     }
 
-    return {
+    const determinedZenithTime: ZenithResult = {
         time: zenithTime,
         altitude: highestAltitude
-    };
+    }
+    return determinedZenithTime
 }
 
 export function getFavorableMoonDatesInRange(coords: Coordinates, startDate: Date, endDate: Date, minIllumination: number = 80): FavorableMoon[] {
-    let currentDate = moment(startDate);
+    const currentDate = moment(startDate);
     const endMoment = moment(endDate);
     const dateRange: FavorableMoon[] = [];
 
@@ -62,7 +65,7 @@ export function getFavorableMoonDatesInRange(coords: Coordinates, startDate: Dat
         const illumination = getMoonIllumination(currentDate.toDate());
         if (illumination >= minIllumination) {
             if (isMoonVisible(coords, currentDate.toDate())) {
-                let favorableMoon: FavorableMoon = {
+                const favorableMoon: FavorableMoon = {
                     date: currentDate.toDate(),
                     illuminationPercentage: illumination,
                     moonriseTime: SunCalc.getMoonTimes(currentDate.toDate(), coords.lat, coords.lon).rise,

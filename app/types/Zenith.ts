@@ -1,4 +1,4 @@
-interface ZenithResult {
+export interface ZenithResult {
     time: Date;
     altitude: number;
 }

@@ -1,4 +1,6 @@
-interface FavorableMoon {
+import { ZenithResult } from "./Zenith";
+
+export interface FavorableMoon {
     date: Date;
     illuminationPercentage: number;
     moonriseTime: Date;
