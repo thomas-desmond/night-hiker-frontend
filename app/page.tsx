@@ -2,7 +2,6 @@ import { headers } from "next/headers";
 import { getFavorableMoonDatesInRange } from "./utils/moon";
 import { Coordinates } from "./types/Coordinates";
 
-
 export default async function Page() {
   const headersList = await headers();
 
