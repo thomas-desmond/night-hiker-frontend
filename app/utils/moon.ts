@@ -19,13 +19,16 @@ function isMoonVisible(coords: Coordinates, date: Date, timezone: string): boole
     if (!moonTimes.rise || !moonTimes.set) {
         return false;
     }
-
    
-    const sunset =  DateTime.fromISO(sunTimes.sunset.toISOString(), { zone: timezone }).toJSDate();
-    const moonrise =  DateTime.fromISO(moonTimes.rise.toISOString(), { zone: timezone }).toJSDate();
+    const sunset =  DateTime.fromISO(sunTimes.sunset.toISOString(), { zone: timezone })
+    const moonrise =  DateTime.fromISO(moonTimes.rise.toISOString(), { zone: timezone })
 
-    const moonriseMinutesBeforeSunset = (moonrise.getTime() - sunset.getTime()) / (1000 * 60);
-    if (moonriseMinutesBeforeSunset < 0 && moonriseMinutesBeforeSunset > -400) return true; // moonrise is before sunset and no more than 400 minutes before sunset
+    
+    const diffInMinutes = moonrise.diff(sunset, 'minutes').as('minutes');
+    console.log('sunset', sunset.toISO(),  '\nmoonrise', moonrise.toISO()," ", diffInMinutes)
+
+    // const moonriseMinutesBeforeSunset = (moonrise.getTime() - sunset.getTime()) / (1000 * 60);
+    if (diffInMinutes < 0 && diffInMinutes > -400) return true; // moonrise is before sunset and no more than 400 minutes before sunset
 
     return false;
 }
