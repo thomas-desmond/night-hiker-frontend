@@ -10,6 +10,8 @@ function getMoonIllumination(date: Date): number {
 }
 
 function isMoonVisible(coords: Coordinates, date: Date, timezone: string): boolean {
+    console.log(date.toDateString());
+
     const sunTimes = SunCalc.getTimes(date, coords.lat, coords.lon);
     const moonTimes = SunCalc.getMoonTimes(date, coords.lat, coords.lon);
 
@@ -72,7 +74,6 @@ export function getFavorableMoonDatesInRange(coords: Coordinates, startDate: Dat
                     moonsetTime: SunCalc.getMoonTimes(currentDate.toDate(), coords.lat, coords.lon).set,
                     sunsetTime: SunCalc.getTimes(currentDate.toDate(), coords.lat, coords.lon).sunset,
                 };
-                console.log(favorableMoon);
 
                 const moonriseTimeHHMM = favorableMoon.moonriseTime.toTimeString().slice(0, 5);
                 const moonsetTimeHHMM = favorableMoon.moonsetTime.toTimeString().slice(0, 5);
