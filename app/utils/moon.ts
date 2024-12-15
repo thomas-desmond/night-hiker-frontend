@@ -12,23 +12,38 @@ function getMoonIllumination(date: Date): number {
 }
 
 function isMoonVisible(coords: Coordinates, date: Date, timezone: string): boolean {
-    const currentTimeAtB = DateTime.fromISO(date.toISOString(), { zone: timezone })
+  // 1. Calculate sunset and moonrise in UTC
+  const times = SunCalc.getTimes(date, coords.lat, coords.lon);
+  const moonTimes = SunCalc.getMoonTimes(date, coords.lat, coords.lon);
 
-    const sunTimes = SunCalc.getTimes(currentTimeAtB.toJSDate(), coords.lat, coords.lon);
-    const moonTimes = SunCalc.getMoonTimes(currentTimeAtB.toJSDate(), coords.lat, coords.lon);
+  // 3. Convert sunset and moonrise to local timezone
+  const sunsetLocal = DateTime.fromJSDate(times.sunset)
+    .setZone(timezone)
 
-    if (!moonTimes.rise || !moonTimes.set) {
-        return false;
-    }
+  let moonriseLocal = DateTime.fromJSDate(moonTimes.rise).setZone(timezone)
+
+    const diffInMinutes = moonriseLocal.diff(sunsetLocal, 'minutes').as('minutes');
+    if (diffInMinutes < 0 && diffInMinutes > -400) return true; // moonrise is before sunset and no more than 400 minutes before sunset
+
+    return false;
+
+    // const currentTimeAtB = DateTime.fromISO(date.toISOString(), { zone: timezone })
+
+    // const sunTimes = SunCalc.getTimes(currentTimeAtB.toJSDate(), coords.lat, coords.lon);
+    // const moonTimes = SunCalc.getMoonTimes(currentTimeAtB.toJSDate(), coords.lat, coords.lon);
+
+    // if (!moonTimes.rise || !moonTimes.set) {
+    //     return false;
+    // }
    
-    const sunset =  DateTime.fromISO(sunTimes.sunset.toISOString(), { zone: timezone }).toJSDate()
-    const moonrise =  DateTime.fromISO(moonTimes.rise.toISOString(), { zone: timezone }).toJSDate()
+    // const sunset =  DateTime.fromISO(sunTimes.sunset.toISOString(), { zone: timezone }).toJSDate()
+    // const moonrise =  DateTime.fromISO(moonTimes.rise.toISOString(), { zone: timezone }).toJSDate()
 
-    const newSunset = moment(sunset).subtract(8, 'hour').toDate()
-    const newMoonrise =  moment(moonrise).subtract(8, 'hour').toDate()
+    // const newSunset = moment(sunset).subtract(8, 'hour').toDate()
+    // const newMoonrise =  moment(moonrise).subtract(8, 'hour').toDate()
 
-    const moonriseMinutesBeforeSunset = (newMoonrise.getTime() - newSunset.getTime()) / (1000 * 60);
-    if (moonriseMinutesBeforeSunset < 0 && moonriseMinutesBeforeSunset > -400) return true; // moonrise is before sunset and no more than 400 minutes before sunset
+    // const moonriseMinutesBeforeSunset = (newMoonrise.getTime() - newSunset.getTime()) / (1000 * 60);
+    // if (moonriseMinutesBeforeSunset < 0 && moonriseMinutesBeforeSunset > -400) return true; // moonrise is before sunset and no more than 400 minutes before sunset
 
     // const diffInMinutes = moonrise.diff(sunset, 'minutes').as('minutes');
     // console.log('sunset', sunset.toISO(),  '\nmoonrise', moonrise.toISO()," ", diffInMinutes)
