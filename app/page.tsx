@@ -27,7 +27,7 @@ export default async function Page() {
     lat: parseFloat(latitude as string),
     lon: parseFloat(longitude),
   };
-  const favorableMoonDates = getFavorableMoonDatesInRange(coords, startDate, endDate, timezone);
+  const favorableMoonDates = getFavorableMoonDatesInRange(coords, startDate, endDate, timezone as string);
 
   return (
     <div>
