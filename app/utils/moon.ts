@@ -20,7 +20,7 @@ function isMoonVisible(coords: Coordinates, date: Date, timezone: string): boole
   const sunsetLocal = DateTime.fromJSDate(times.sunset)
     .setZone(timezone)
 
-  let moonriseLocal = DateTime.fromJSDate(moonTimes.rise).setZone(timezone)
+  const moonriseLocal = DateTime.fromJSDate(moonTimes.rise).setZone(timezone)
 
     const diffInMinutes = moonriseLocal.diff(sunsetLocal, 'minutes').as('minutes');
     if (diffInMinutes < 0 && diffInMinutes > -400) return true; // moonrise is before sunset and no more than 400 minutes before sunset
