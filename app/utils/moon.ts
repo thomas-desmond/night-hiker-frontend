@@ -35,10 +35,9 @@ function isMoonVisible(
 
   const adjustDay = moonriseLocal.day !== sunsetLocal.day;
 
-
-if (adjustDay) {
+  if (adjustDay) {
     moonriseLocal = moonriseLocal.set({ day: sunsetLocal.day });
-}
+  }
 
   console.log(
     "sunset",
@@ -171,24 +170,21 @@ export function getFavorableMoonDatesInRange(
     const illumination = getMoonIllumination(currentDate.toDate());
     if (illumination >= minIllumination) {
       if (isMoonVisible(coords, currentDate.toDate(), timezone)) {
+
+        const moonTimesUTC = SunCalc.getMoonTimes(currentDate.toDate(), coords.lat, coords.lon);
+        const moonriseTimeLocal = DateTime.fromJSDate(moonTimesUTC.rise).setZone(timezone).toJSDate();
+        const moonsetTimeLocal = DateTime.fromJSDate(moonTimesUTC.set).setZone(timezone).toJSDate();
+
+        const sunTimes = SunCalc.getTimes(currentDate.toDate(), coords.lat, coords.lon);
+        const sunsetTimeLocal = DateTime.fromJSDate(sunTimes.sunset).setZone(timezone).toJSDate();
+
+
         const favorableMoon: FavorableMoon = {
           date: currentDate.toDate(),
           illuminationPercentage: illumination,
-          moonriseTime: SunCalc.getMoonTimes(
-            currentDate.toDate(),
-            coords.lat,
-            coords.lon
-          ).rise,
-          moonsetTime: SunCalc.getMoonTimes(
-            currentDate.toDate(),
-            coords.lat,
-            coords.lon
-          ).set,
-          sunsetTime: SunCalc.getTimes(
-            currentDate.toDate(),
-            coords.lat,
-            coords.lon
-          ).sunset,
+          moonriseTime: moonriseTimeLocal,
+          moonsetTime: moonsetTimeLocal,
+          sunsetTime: sunsetTimeLocal
         };
 
         const moonriseTimeHHMM = favorableMoon.moonriseTime
