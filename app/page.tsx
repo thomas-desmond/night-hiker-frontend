@@ -44,6 +44,7 @@ export default async function Page() {
             <li>{favorableMoon.date.toDateString()}</li>
             <li>Moon Illumination {Math.round(favorableMoon.illuminationPercentage)}%</li>
             <li>Moon rise time: {favorableMoon.moonriseTime.toFormat('hh:mm a')}</li>
+            <li>Moon set time: {favorableMoon.moonsetTime.toFormat('hh:mm a')}</li>
             <li>Sunset time: {favorableMoon.sunsetTime.toFormat('hh:mm a')}</li>
             <li>Zenith time: {favorableMoon.zenithTime?.time.toFormat('hh:mm a')}</li>
             <br />
