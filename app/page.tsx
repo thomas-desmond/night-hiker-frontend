@@ -44,9 +44,9 @@ export default async function Page() {
           <div key={favorableMoon.date.toDateString()}>
             <li>{favorableMoon.date.toDateString()}</li>
             <li>Moon Illumination {Math.round(favorableMoon.illuminationPercentage)}%</li>
-            <li>Moon rise time: {DateTime.fromJSDate(favorableMoon.moonriseTime).setZone(timezone as string).toJSDate().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</li>
-            <li>Sunset time: {DateTime.fromJSDate(favorableMoon.sunsetTime).setZone(timezone as string).toJSDate().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</li>
-            <li>Zenith time: {DateTime.fromJSDate(favorableMoon.zenithTime?.time as Date).setZone(timezone as string).toJSDate().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</li>
+            <li>Moon rise time: {favorableMoon.moonriseTime.toFormat('hh:mm a')}</li>
+            <li>Sunset time: {favorableMoon.sunsetTime.toFormat('hh:mm a')}</li>
+            <li>Zenith time: {DateTime.fromJSDate(favorableMoon.zenithTime?.time as Date).setZone(timezone as string).toJSDate().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })}</li>
             <br />
           </div>
         ))}

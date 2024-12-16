@@ -172,12 +172,11 @@ export function getFavorableMoonDatesInRange(
       if (isMoonVisible(coords, currentDate.toDate(), timezone)) {
 
         const moonTimesUTC = SunCalc.getMoonTimes(currentDate.toDate(), coords.lat, coords.lon);
-        const moonriseTimeLocal = DateTime.fromJSDate(moonTimesUTC.rise).setZone(timezone).toJSDate();
-        const moonsetTimeLocal = DateTime.fromJSDate(moonTimesUTC.set).setZone(timezone).toJSDate();
+        const moonriseTimeLocal = DateTime.fromJSDate(moonTimesUTC.rise).setZone(timezone);
+        const moonsetTimeLocal = DateTime.fromJSDate(moonTimesUTC.set).setZone(timezone);
 
         const sunTimes = SunCalc.getTimes(currentDate.toDate(), coords.lat, coords.lon);
-        const sunsetTimeLocal = DateTime.fromJSDate(sunTimes.sunset).setZone(timezone).toJSDate();
-
+        const sunsetTimeLocal = DateTime.fromJSDate(sunTimes.sunset).setZone(timezone);
 
         const favorableMoon: FavorableMoon = {
           date: currentDate.toDate(),
@@ -186,13 +185,8 @@ export function getFavorableMoonDatesInRange(
           moonsetTime: moonsetTimeLocal,
           sunsetTime: sunsetTimeLocal
         };
-
-        const moonriseTimeHHMM = favorableMoon.moonriseTime
-          .toTimeString()
-          .slice(0, 5);
-        const moonsetTimeHHMM = favorableMoon.moonsetTime
-          .toTimeString()
-          .slice(0, 5);
+        const moonriseTimeHHMM = favorableMoon.moonriseTime.toFormat('HH:mm');
+        const moonsetTimeHHMM = favorableMoon.moonsetTime.toFormat('HH:mm');
         // TODO: This is time consuming, consider optimizing
         favorableMoon.zenithTime = findMoonZenith(
           coords,
