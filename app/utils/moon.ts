@@ -7,7 +7,7 @@ import { DateTime } from "luxon";
 
 function getMoonIllumination(date: Date): number {
   const moonIllumination = SunCalc.getMoonIllumination(date);
-  return moonIllumination.fraction * 100; // Convert tnpm i --save-dev @types/astronomiao percentage
+  return moonIllumination.fraction * 100;
 }
 
 function isMoonVisible(
@@ -15,21 +15,9 @@ function isMoonVisible(
   date: Date,
   timezone: string
 ): boolean {
-  // 1. Calculate sunset and moonrise in UTC
   const sunTimes = SunCalc.getTimes(date, coords.lat, coords.lon);
   const moonTimes = SunCalc.getMoonTimes(date, coords.lat, coords.lon);
 
-  //   const dateTime = DateTime.now().setZone(timezone);
-  //   const offsetInHours = dateTime.offset / 60;
-  //   console.log("RISEEEE ", moonTimes.rise);
-  //   const moonriseHours = moonTimes.rise.getHours();
-
-  //   let adjustDay = false;
-  //   if (moonriseHours - offsetInHours < 0) {
-  //     adjustDay = true;
-  //   }
-
-  // 3. Convert sunset and moonrise to local timezone
   const sunsetLocal = DateTime.fromJSDate(sunTimes.sunset).setZone(timezone);
   let moonriseLocal = DateTime.fromJSDate(moonTimes.rise).setZone(timezone);
 
@@ -39,75 +27,13 @@ function isMoonVisible(
     moonriseLocal = moonriseLocal.set({ day: sunsetLocal.day });
   }
 
-  console.log(
-    "sunset",
-    sunsetLocal.toISO(),
-    "\nmoonrise",
-    moonriseLocal.toISO()
-  );
-
   const diffInMinutes = moonriseLocal
     .diff(sunsetLocal, "minutes")
     .as("minutes");
-  if (diffInMinutes < 0 && diffInMinutes > -400) return true; // moonrise is before sunset and no more than 400 minutes before sunset
-
-  return false;
-
-  // const currentTimeAtB = DateTime.fromISO(date.toISOString(), { zone: timezone })
-
-  // const sunTimes = SunCalc.getTimes(currentTimeAtB.toJSDate(), coords.lat, coords.lon);
-  // const moonTimes = SunCalc.getMoonTimes(currentTimeAtB.toJSDate(), coords.lat, coords.lon);
-
-  // if (!moonTimes.rise || !moonTimes.set) {
-  //     return false;
-  // }
-
-  // const sunset =  DateTime.fromISO(sunTimes.sunset.toISOString(), { zone: timezone }).toJSDate()
-  // const moonrise =  DateTime.fromISO(moonTimes.rise.toISOString(), { zone: timezone }).toJSDate()
-
-  // const newSunset = moment(sunset).subtract(8, 'hour').toDate()
-  // const newMoonrise =  moment(moonrise).subtract(8, 'hour').toDate()
-
-  // const moonriseMinutesBeforeSunset = (newMoonrise.getTime() - newSunset.getTime()) / (1000 * 60);
-  // if (moonriseMinutesBeforeSunset < 0 && moonriseMinutesBeforeSunset > -400) return true; // moonrise is before sunset and no more than 400 minutes before sunset
-
-  // const diffInMinutes = moonrise.diff(sunset, 'minutes').as('minutes');
-  // console.log('sunset', sunset.toISO(),  '\nmoonrise', moonrise.toISO()," ", diffInMinutes)
-
-  // const moonriseMinutesBeforeSunset = (moonrise.getTime() - sunset.getTime()) / (1000 * 60);
-  // if (diffInMinutes < 0 && diffInMinutes > -400) return true; // moonrise is before sunset and no more than 400 minutes before sunset
+  if (diffInMinutes < 0 && diffInMinutes > -400) return true;
 
   return false;
 }
-
-// function isMoonVisible(coords: Coordinates, date: Date, timezone: string): boolean {
-//     const currentTimeAtB = DateTime.fromISO(date.toISOString(), { zone: timezone });
-
-//     // Calculate the sun's position
-//     const sunPos = solar.apparentPosition(currentTimeAtB.toJSDate(), coords.lat, coords.lon);
-
-//     // Calculate the moon's position
-//     const moonPos = moonposition.position(currentTimeAtB.toJSDate());
-//     const moonTimes = {
-//         rise: moonPos.rise(coords.lat, coords.lon),
-//         set: moonPos.set(coords.lat, coords.lon),
-//     };
-
-//     if (!moonTimes.rise || !moonTimes.set) {
-//         return false;
-//     }
-
-//     const sunset = DateTime.fromISO(sunPos.sunset.toISOString(), { zone: timezone });
-//     const moonrise = DateTime.fromISO(moonTimes.rise.toISOString(), { zone: timezone });
-//     sunset
-
-//     const diffInMinutes = moonrise.diff(sunset, 'minutes').as('minutes');
-//     console.log('sunset', sunset.toISO(), '\nmoonrise', moonrise.toISO(), " ", diffInMinutes);
-
-//     if (diffInMinutes < 0 && diffInMinutes > -400) return true; // moonrise is before sunset and no more than 400 minutes before sunset
-
-//     return false;
-// }
 
 function findMoonZenith(
   coords: Coordinates,
@@ -125,7 +51,6 @@ function findMoonZenith(
     minute: parseInt(endTime.split(":")[1]),
   });
 
-  // If end time is earlier than start time, add one day to end time
   if (endMoment.isBefore(startMoment)) {
     endMoment.add(1, "day");
   }
@@ -145,11 +70,11 @@ function findMoonZenith(
       highestAltitude = moonPosition.altitude;
       zenithTime = currentTime.toDate();
     }
-    currentTime.add(1, "minute"); // Adjust the interval as needed
+    currentTime.add(3, "minute");
   }
 
   const determinedZenithTime: ZenithResult = {
-    time: zenithTime,
+    time: DateTime.fromJSDate(zenithTime).setZone(timezone),
     altitude: highestAltitude,
   };
   return determinedZenithTime;
@@ -170,24 +95,36 @@ export function getFavorableMoonDatesInRange(
     const illumination = getMoonIllumination(currentDate.toDate());
     if (illumination >= minIllumination) {
       if (isMoonVisible(coords, currentDate.toDate(), timezone)) {
+        const moonTimesUTC = SunCalc.getMoonTimes(
+          currentDate.toDate(),
+          coords.lat,
+          coords.lon
+        );
+        const moonriseTimeLocal = DateTime.fromJSDate(
+          moonTimesUTC.rise
+        ).setZone(timezone);
+        const moonsetTimeLocal = DateTime.fromJSDate(moonTimesUTC.set).setZone(
+          timezone
+        );
 
-        const moonTimesUTC = SunCalc.getMoonTimes(currentDate.toDate(), coords.lat, coords.lon);
-        const moonriseTimeLocal = DateTime.fromJSDate(moonTimesUTC.rise).setZone(timezone);
-        const moonsetTimeLocal = DateTime.fromJSDate(moonTimesUTC.set).setZone(timezone);
-
-        const sunTimes = SunCalc.getTimes(currentDate.toDate(), coords.lat, coords.lon);
-        const sunsetTimeLocal = DateTime.fromJSDate(sunTimes.sunset).setZone(timezone);
+        const sunTimes = SunCalc.getTimes(
+          currentDate.toDate(),
+          coords.lat,
+          coords.lon
+        );
+        const sunsetTimeLocal = DateTime.fromJSDate(sunTimes.sunset).setZone(
+          timezone
+        );
 
         const favorableMoon: FavorableMoon = {
           date: currentDate.toDate(),
           illuminationPercentage: illumination,
           moonriseTime: moonriseTimeLocal,
           moonsetTime: moonsetTimeLocal,
-          sunsetTime: sunsetTimeLocal
+          sunsetTime: sunsetTimeLocal,
         };
-        const moonriseTimeHHMM = favorableMoon.moonriseTime.toFormat('HH:mm');
-        const moonsetTimeHHMM = favorableMoon.moonsetTime.toFormat('HH:mm');
-        // TODO: This is time consuming, consider optimizing
+        const moonriseTimeHHMM = favorableMoon.moonriseTime.toFormat("HH:mm");
+        const moonsetTimeHHMM = favorableMoon.moonsetTime.toFormat("HH:mm");
         favorableMoon.zenithTime = findMoonZenith(
           coords,
           currentDate.toDate(),

@@ -1,4 +1,6 @@
+import { DateTime } from "luxon";
+
 export interface ZenithResult {
-    time: Date;
+    time: DateTime;
     altitude: number;
 }
