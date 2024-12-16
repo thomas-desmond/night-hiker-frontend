@@ -24,11 +24,11 @@ function isMoonVisible(
   const sunsetLocal = DateTime.fromJSDate(sunTimes.sunset).setZone(timezone);
   let moonriseLocal = DateTime.fromJSDate(moonTimes.rise).setZone(timezone);
 
-//   const adjustDay = moonriseLocal.day !== sunsetLocal.day;
+  const adjustDay = moonriseLocal.day !== sunsetLocal.day;
 
-//   if (adjustDay) {
-//     moonriseLocal = moonriseLocal.set({ day: sunsetLocal.day });
-//   }
+  if (adjustDay) {
+    moonriseLocal = moonriseLocal.set({ day: sunsetLocal.day });
+  }
 
   const diffInMinutes = moonriseLocal
     .diff(sunsetLocal, "minutes")
