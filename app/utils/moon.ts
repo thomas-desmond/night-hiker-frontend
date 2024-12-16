@@ -19,7 +19,7 @@ function isMoonVisible(
   const sunTimes = SunCalc.getTimes(date, coords.lat, coords.lon);
   const moonTimes = SunCalc.getMoonTimes(date, coords.lat, coords.lon);
   
-  console.log("Using Date ", date.getDay(), " and getting moon times ", moonTimes.rise.getDay(), " and set ", moonTimes.set.getDay());
+  console.log("Using Date ", date?.getDay(), " and getting moon times ", moonTimes.rise?.getDay(), " and set ", moonTimes.set?.getDay());
 
   const sunsetLocal = DateTime.fromJSDate(sunTimes.sunset).setZone(timezone);
   let moonriseLocal = DateTime.fromJSDate(moonTimes.rise).setZone(timezone);
