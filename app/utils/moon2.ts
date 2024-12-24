@@ -29,13 +29,13 @@ export function checkHikingConditionsInRange(
 ): NightHikingResult[] {
   const results: NightHikingResult[] = [];
 
-  // Ensure dates are in the user's local timezone
-  const localStartDate = startDate.setZone(conditions.timezone, {
-    keepLocalTime: true,
-  });
-  const localEndDate = endDate.setZone(conditions.timezone, {
-    keepLocalTime: true,
-  });
+  // // Ensure dates are in the user's local timezone
+  // const localStartDate = startDate.setZone(conditions.timezone, {
+  //   keepLocalTime: true,
+  // });
+  // const localEndDate = endDate.setZone(conditions.timezone, {
+  //   keepLocalTime: true,
+  // });
 
   // Iterate over the range of dates
   for (
@@ -47,12 +47,12 @@ export function checkHikingConditionsInRange(
     const startHikeTime = date.set({
       hour: parseInt(conditions.startHikeTime.split(":")[0], 10),
       minute: parseInt(conditions.startHikeTime.split(":")[1], 10),
-    });
+    }).setZone(conditions.timezone);
 
     const endHikeTime = date.set({
       hour: parseInt(conditions.endHikeTime.split(":")[0], 10),
       minute: parseInt(conditions.endHikeTime.split(":")[1], 10),
-    });
+    }).setZone(conditions.timezone);
 
     // Convert local date to UTC for suncalc (which requires UTC input)
     const utcDate = date.toUTC();
