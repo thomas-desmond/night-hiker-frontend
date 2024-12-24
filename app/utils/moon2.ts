@@ -151,3 +151,45 @@ export function checkHikingConditionsInRange(
 
   return results;
 }
+
+export function simpleMoonTimes(
+  date: DateTime,
+  conditions: NightHikingConditions
+) {
+  // Convert the input date to UTC
+  const utcDate = date.toUTC();
+
+  // const utcDate = DateTime.fromJSDate(date, { zone: 'utc' });
+
+  // Get moon times in UTC
+  const moonTimes = getMoonTimes(utcDate.toJSDate(), conditions.latitude, conditions.longitude);
+  let moonrise = moonTimes.rise
+  ? DateTime.fromJSDate(moonTimes.rise).setZone(conditions.timezone)
+  : undefined;
+let moonset = moonTimes.set
+  ? DateTime.fromJSDate(moonTimes.set).setZone(conditions.timezone)
+  : undefined;
+
+  if (moonrise && moonset && moonset < moonrise) {
+    const nextDayMoonTimes = getMoonTimes(
+      utcDate.plus({ days: 1 }).toJSDate(),
+      conditions.latitude,
+      conditions.longitude
+    );
+    moonset = nextDayMoonTimes.set
+      ? DateTime.fromJSDate(nextDayMoonTimes.set).setZone(conditions.timezone)
+      : undefined;
+  }
+
+
+  // Convert moon times to local timezone
+  const moonriseLocal = moonrise ? moonrise.setZone(conditions.timezone) : null;
+  const moonsetLocal = moonset ? moonset.setZone(conditions.timezone) : null;
+
+  
+
+  return {
+    rise: moonriseLocal,
+    set: moonsetLocal,
+  };
+}

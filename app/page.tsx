@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 import { DateTime } from "luxon";
-import { checkHikingConditionsInRange } from "./utils/moon2";
+import { checkHikingConditionsInRange, simpleMoonTimes } from "./utils/moon2";
 
 export default async function Page() {
   const headersList = await headers();
@@ -26,15 +26,16 @@ export default async function Page() {
     timezone: timezone,
     minIllumination: 80,
     startHikeTime: "20:00", // 8 PM
-    endHikeTime: "23:00",   // 11 PM
+    endHikeTime: "23:00", // 11 PM
   };
-  
+
   // Check a range of dates
   const startDate = DateTime.now().setZone("UTC");
   const endDate = DateTime.now().plus({ days: 45 }).setZone("UTC");
-  
+
   const results = checkHikingConditionsInRange(startDate, endDate, conditions);
-  
+  const simple = simpleMoonTimes(endDate, conditions);
+
   // const favorableMoonDates = getFavorableMoonDatesInRange(
   //   coords,
   //   startDate,
@@ -50,6 +51,14 @@ export default async function Page() {
       <p>City: {city}</p>
       <p>Region: {region}</p>
       <br />
+      <p className="font-bold">Simple Moon Times {endDate.toISODate()}:</p>
+      <ul>
+        <li>
+          Moon rise: {simple.rise ? simple.rise.toString() : "N/A"}
+        </li>
+        <li>Moon set: {simple.set ? simple.set.toString() : "N/A"}</li>
+      </ul>
+      <br />
       <p className="font-bold">Favorable Moon Dates:</p>
       <ul>
         {results.map((favorableMoon) => (
@@ -57,20 +66,36 @@ export default async function Page() {
             <li>---------------------------------</li>
             <li>{favorableMoon.date.toFormat("MMMM dd yyyy")}</li>
             <li>
-              Moon Illumination{" "}
-              {Math.round(favorableMoon.moonIllumination)}%
+              Moon Illumination {Math.round(favorableMoon.moonIllumination)}%
             </li>
             <li>
-              Moon rise time: {favorableMoon.moonrise ? favorableMoon.moonrise.toFormat("hh:mm a") : "N/A"}
+              Moon rise time:{" "}
+              {favorableMoon.moonrise
+                ? favorableMoon.moonrise.toFormat("hh:mm a")
+                : "N/A"}
             </li>
             <li>
-              Moon set time: {favorableMoon.moonset ? favorableMoon.moonset.toFormat("hh:mm a") : "N/A"}
+              Moon set time:{" "}
+              {favorableMoon.moonset
+                ? favorableMoon.moonset.toFormat("hh:mm a")
+                : "N/A"}
             </li>
-            <li>Sunset time: {favorableMoon.sunset ? favorableMoon.sunset.toFormat("hh:mm a") : "N/A"}</li>
             <li>
-              Zenith time: {favorableMoon.moonZenith ? favorableMoon.moonZenith.toFormat("hh:mm a") : "N/A"}
+              Sunset time:{" "}
+              {favorableMoon.sunset
+                ? favorableMoon.sunset.toFormat("hh:mm a")
+                : "N/A"}
             </li>
-            <li>Good for hiking: {favorableMoon.goodForHiking} {favorableMoon.reason}</li>
+            <li>
+              Zenith time:{" "}
+              {favorableMoon.moonZenith
+                ? favorableMoon.moonZenith.toFormat("hh:mm a")
+                : "N/A"}
+            </li>
+            <li>
+              Good for hiking: {favorableMoon.goodForHiking}{" "}
+              {favorableMoon.reason}
+            </li>
             <br />
           </div>
         ))}
