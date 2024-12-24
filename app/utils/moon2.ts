@@ -128,7 +128,7 @@ export function checkHikingConditionsInRange(
     let reason = "The Moon meets visibility and illumination requirements.";
 
     if (isMoonVisibleDuringHike && !isMoonVisibleBeforeHike) {
-      goodForHiking = "Maybe";
+      goodForHiking = "Partial";
       reason = "The Moon rises during your hike so maybe a good night.";
     } else if (!isMoonVisibleBeforeHike) {
       goodForHiking = "No";
