@@ -1,4 +1,5 @@
 import { DateTime } from "luxon";
+import { start } from "repl";
 import { getMoonIllumination, getMoonTimes, getTimes } from "suncalc"; // Install suncalc: `npm install suncalc`
 
 interface NightHikingConditions {
@@ -38,8 +39,8 @@ export function checkHikingConditionsInRange(
 
   // Iterate over the range of dates
   for (
-    let date = localStartDate;
-    date <= localEndDate;
+    let date = startDate;
+    date <= endDate;
     date = date.plus({ days: 1 })
   ) {
     // Calculate start and end times for the hike in local timezone
