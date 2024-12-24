@@ -38,22 +38,7 @@ export function checkHikingConditionsInRange(
   // });
 
   // Iterate over the range of dates
-  for (
-    let date = startDate;
-    date <= endDate;
-    date = date.plus({ days: 1 })
-  ) {
-    // Calculate start and end times for the hike in local timezone
-    const startHikeTime = date.set({
-      hour: parseInt(conditions.startHikeTime.split(":")[0], 10),
-      minute: parseInt(conditions.startHikeTime.split(":")[1], 10),
-    }).setZone(conditions.timezone);
-
-    const endHikeTime = date.set({
-      hour: parseInt(conditions.endHikeTime.split(":")[0], 10),
-      minute: parseInt(conditions.endHikeTime.split(":")[1], 10),
-    }).setZone(conditions.timezone);
-
+  for (let date = startDate; date <= endDate; date = date.plus({ days: 1 })) {
     // Convert local date to UTC for suncalc (which requires UTC input)
     const utcDate = date.toUTC();
 
@@ -112,6 +97,28 @@ export function checkHikingConditionsInRange(
       : null;
     const moonsetLocal = moonset ? moonset.setZone(conditions.timezone) : null;
     // Ensure moonrise or moonset overlaps with hike time
+
+    const startHikeTime = DateTime.fromObject(
+      {
+        year: moonriseLocal?.year,
+        month: moonriseLocal?.month,
+        day: moonriseLocal?.day,
+        hour: 20,
+        minute: 0,
+      },
+      { zone: conditions.timezone }
+    );
+
+    const endHikeTime = DateTime.fromObject(
+      {
+        year: moonriseLocal?.year,
+        month: moonriseLocal?.month,
+        day: moonriseLocal?.day,
+        hour: 23,
+        minute: 59,
+      },
+      { zone: conditions.timezone }
+    );
     console.log("Moon Illum: ", moonIllumination);
     console.log("Moon Rise: ", moonriseLocal);
     console.log("Moon Set: ", moonsetLocal);
@@ -130,6 +137,8 @@ export function checkHikingConditionsInRange(
       moonriseLocal &&
       moonriseLocal >= startHikeTime &&
       moonriseLocal <= endHikeTime;
+
+
 
     let goodForHiking: "Yes" | "No" | "Partial" = "Yes";
     let reason = "The Moon meets visibility and illumination requirements.";
