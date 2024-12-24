@@ -105,23 +105,30 @@ export function checkHikingConditionsInRange(
       ? DateTime.fromJSDate(sunTimes.sunset).setZone(conditions.timezone)
       : undefined;
 
+    // Convert moon times to local timezone
+    const moonriseLocal = moonrise
+      ? moonrise.setZone(conditions.timezone)
+      : null;
+    const moonsetLocal = moonset ? moonset.setZone(conditions.timezone) : null;
     // Ensure moonrise or moonset overlaps with hike time
     console.log("Moon Illum: ", moonIllumination);
-    console.log("Moon Rise: ", moonrise);
-    console.log("Moon Set: ", moonset);
+    console.log("Moon Rise: ", moonriseLocal);
+    console.log("Moon Set: ", moonsetLocal);
     console.log("Sun Set: ", sunset);
     console.log("Start Hike Time: ", startHikeTime);
     console.log("End Hike Time: ", endHikeTime);
     console.log("\n\n");
 
     const isMoonVisibleBeforeHike =
-      moonrise &&
-      moonrise <= startHikeTime &&
-      moonset &&
-      moonset >= endHikeTime;
+      moonriseLocal &&
+      moonriseLocal <= startHikeTime &&
+      moonsetLocal &&
+      moonsetLocal >= endHikeTime;
 
     const isMoonVisibleDuringHike =
-      moonrise && moonrise >= startHikeTime && moonrise <= endHikeTime;
+      moonriseLocal &&
+      moonriseLocal >= startHikeTime &&
+      moonriseLocal <= endHikeTime;
 
     let goodForHiking: "Yes" | "No" | "Partial" = "Yes";
     let reason = "The Moon meets visibility and illumination requirements.";
@@ -162,13 +169,17 @@ export function simpleMoonTimes(
   // const utcDate = DateTime.fromJSDate(date, { zone: 'utc' });
 
   // Get moon times in UTC
-  const moonTimes = getMoonTimes(utcDate.toJSDate(), conditions.latitude, conditions.longitude);
+  const moonTimes = getMoonTimes(
+    utcDate.toJSDate(),
+    conditions.latitude,
+    conditions.longitude
+  );
   let moonrise = moonTimes.rise
-  ? DateTime.fromJSDate(moonTimes.rise).setZone(conditions.timezone)
-  : undefined;
-let moonset = moonTimes.set
-  ? DateTime.fromJSDate(moonTimes.set).setZone(conditions.timezone)
-  : undefined;
+    ? DateTime.fromJSDate(moonTimes.rise).setZone(conditions.timezone)
+    : undefined;
+  let moonset = moonTimes.set
+    ? DateTime.fromJSDate(moonTimes.set).setZone(conditions.timezone)
+    : undefined;
 
   if (moonrise && moonset && moonset < moonrise) {
     const nextDayMoonTimes = getMoonTimes(
@@ -181,12 +192,9 @@ let moonset = moonTimes.set
       : undefined;
   }
 
-
   // Convert moon times to local timezone
   const moonriseLocal = moonrise ? moonrise.setZone(conditions.timezone) : null;
   const moonsetLocal = moonset ? moonset.setZone(conditions.timezone) : null;
-
-  
 
   return {
     rise: moonriseLocal,

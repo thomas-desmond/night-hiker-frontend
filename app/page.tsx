@@ -54,9 +54,9 @@ export default async function Page() {
       <p className="font-bold">Simple Moon Times {endDate.toISODate()}:</p>
       <ul>
         <li>
-          Moon rise: {simple.rise ? simple.rise.toString() : "N/A"}
+          {simple.rise ? simple.rise.toFormat("MMMM dd yyyy, hh:mm a") : "N/A"}
         </li>
-        <li>Moon set: {simple.set ? simple.set.toString() : "N/A"}</li>
+        <li>Moon set: {simple.set ? simple.set.toFormat("MMMM dd yyyy, hh:mm a") : "N/A"}</li>
       </ul>
       <br />
       <p className="font-bold">Favorable Moon Dates:</p>
@@ -71,25 +71,25 @@ export default async function Page() {
             <li>
               Moon rise time:{" "}
               {favorableMoon.moonrise
-                ? favorableMoon.moonrise.toFormat("hh:mm a")
+                ? favorableMoon.moonrise.toFormat("MMMM dd yyyy, hh:mm a")
                 : "N/A"}
             </li>
             <li>
               Moon set time:{" "}
               {favorableMoon.moonset
-                ? favorableMoon.moonset.toFormat("hh:mm a")
+                ? favorableMoon.moonset.toFormat("MMMM dd yyyy, hh:mm a")
                 : "N/A"}
             </li>
             <li>
               Sunset time:{" "}
               {favorableMoon.sunset
-                ? favorableMoon.sunset.toFormat("hh:mm a")
+                ? favorableMoon.sunset.toFormat("MMMM dd yyyy, hh:mm a")
                 : "N/A"}
             </li>
             <li>
               Zenith time:{" "}
               {favorableMoon.moonZenith
-                ? favorableMoon.moonZenith.toFormat("hh:mm a")
+                ? favorableMoon.moonZenith.toFormat("MMMM dd yyyy, hh:mm a")
                 : "N/A"}
             </li>
             <li>
