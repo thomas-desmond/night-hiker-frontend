@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
-import { getFavorableMoonDatesInRange } from "./utils/moon";
-import { Coordinates } from "./types/Coordinates";
+import { DateTime } from "luxon";
+import { checkHikingConditionsInRange } from "./utils/moon2";
 
 export default async function Page() {
   const headersList = await headers();
@@ -12,7 +12,7 @@ export default async function Page() {
   let timezone = headersList.get("x-vercel-ip-timezone");
 
   // Default
-  if (!latitude || !longitude || !city || !region) {
+  if (!latitude || !longitude || !city || !region || !timezone) {
     latitude = "33.0893";
     longitude = "-117.1153";
     city = "Escondido";
@@ -20,14 +20,27 @@ export default async function Page() {
     timezone = "America/Los_Angeles";
   }
 
-  const startDate = new Date(2025, 0, 1); // January 1, 2025
-  const endDate = new Date(2025, 1, 31); // January 31, 2025
-
-  const coords: Coordinates = {
-    lat: parseFloat(latitude as string),
-    lon: parseFloat(longitude),
+  const conditions = {
+    latitude: +latitude,
+    longitude: +longitude,
+    timezone: timezone,
+    minIllumination: 80,
+    startHikeTime: "20:00", // 8 PM
+    endHikeTime: "23:00",   // 11 PM
   };
-  const favorableMoonDates = getFavorableMoonDatesInRange(coords, startDate, endDate, timezone as string);
+  
+  // Check a range of dates
+  const startDate = DateTime.now().setZone("UTC");
+  const endDate = DateTime.now().plus({ days: 45 }).setZone("UTC");
+  
+  const results = checkHikingConditionsInRange(startDate, endDate, conditions);
+  
+  // const favorableMoonDates = getFavorableMoonDatesInRange(
+  //   coords,
+  //   startDate,
+  //   endDate,
+  //   timezone as string
+  // );
 
   return (
     <div>
@@ -39,14 +52,25 @@ export default async function Page() {
       <br />
       <p className="font-bold">Favorable Moon Dates:</p>
       <ul>
-        {favorableMoonDates.map((favorableMoon) => (
-          <div key={favorableMoon.date.toDateString()}>
-            <li>{favorableMoon.date.toDateString()}</li>
-            <li>Moon Illumination {Math.round(favorableMoon.illuminationPercentage)}%</li>
-            <li>Moon rise time: {favorableMoon.moonriseTime.toFormat('hh:mm a')}</li>
-            <li>Moon set time: {favorableMoon.moonsetTime.toFormat('hh:mm a')}</li>
-            <li>Sunset time: {favorableMoon.sunsetTime.toFormat('hh:mm a')}</li>
-            <li>Zenith time: {favorableMoon.zenithTime?.time.toFormat('hh:mm a')}</li>
+        {results.map((favorableMoon) => (
+          <div key={favorableMoon.date.toString()}>
+            <li>---------------------------------</li>
+            <li>{favorableMoon.date.toFormat("MMMM dd yyyy")}</li>
+            <li>
+              Moon Illumination{" "}
+              {Math.round(favorableMoon.moonIllumination)}%
+            </li>
+            <li>
+              Moon rise time: {favorableMoon.moonrise ? favorableMoon.moonrise.toFormat("hh:mm a") : "N/A"}
+            </li>
+            <li>
+              Moon set time: {favorableMoon.moonset ? favorableMoon.moonset.toFormat("hh:mm a") : "N/A"}
+            </li>
+            <li>Sunset time: {favorableMoon.sunset ? favorableMoon.sunset.toFormat("hh:mm a") : "N/A"}</li>
+            <li>
+              Zenith time: {favorableMoon.moonZenith ? favorableMoon.moonZenith.toFormat("hh:mm a") : "N/A"}
+            </li>
+            <li>Good for hiking: {favorableMoon.goodForHiking} {favorableMoon.reason}</li>
             <br />
           </div>
         ))}
