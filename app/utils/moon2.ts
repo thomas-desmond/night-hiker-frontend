@@ -1,4 +1,3 @@
-import { Illumination } from "astronomy-engine";
 import { DateTime } from "luxon";
 import { getMoonIllumination, getMoonTimes, getTimes } from "suncalc"; // Install suncalc: `npm install suncalc`
 
