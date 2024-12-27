@@ -32,21 +32,28 @@ export function HikingDateCard({ date }: HikingDateCardProps) {
               {Math.round(date.moonIllumination)}% illumination
             </p>
           </div>
-          <div
-            className={`px-4 py-2 rounded-full text-sm font-medium ${
+            <div className="relative group">
+            <div
+              className={`px-4 py-2 rounded-full text-sm font-medium ${
               date.isGoodForHiking === "Yes"
                 ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-100"
                 : date.isGoodForHiking === "Partial"
                 ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-100"
                 : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-100"
-            }`}
-          >
-            {date.isGoodForHiking === "Yes"
+              }`}
+            >
+              {date.isGoodForHiking === "Yes"
               ? "Good for Hiking"
               : date.isGoodForHiking === "Partial"
               ? "Okay at Certain Times"
               : "Not Recommended"}
-          </div>
+            </div>
+            {date.reason && (
+              <div className="z-10 absolute left-0 mt-2 w-64 p-2 bg-white dark:bg-gray-800 text-sm text-muted-foreground border border-border/50 rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
+              {date.reason}
+              </div>
+            )}
+            </div>
         </div>
 
         <Timeline date={date} />
@@ -59,12 +66,6 @@ export function HikingDateCard({ date }: HikingDateCardProps) {
               
             </p>
           </div>
-        )}
-
-        {date.reason && (
-          <p className="text-sm text-muted-foreground bg-muted/50 p-3 rounded-md border border-border/50">
-            {date.reason}
-          </p>
         )}
       </div>
     </Card>
