@@ -1,6 +1,5 @@
 import { HikingDate } from "@/types/hiking";
 import { DateTime } from "luxon";
-import { start } from "repl";
 import { getMoonIllumination, getMoonTimes, getTimes } from "suncalc"; // Install suncalc: `npm install suncalc`
 
 interface NightHikingConditions {
@@ -10,17 +9,6 @@ interface NightHikingConditions {
   minIllumination: number; // e.g., 90%
   startHikeTime: string; // HH:mm in local timezone
   endHikeTime: string; // HH:mm in local timezone
-}
-
-interface NightHikingResult {
-  date: DateTime; // Local time
-  isGoodForHiking: "Yes" | "No" | "Partial";
-  moonIllumination: number;
-  moonrise?: DateTime;
-  moonset?: DateTime;
-  moonZenith?: DateTime;
-  sunset?: DateTime;
-  reason: string;
 }
 
 export function checkHikingConditionsInRange(
@@ -120,13 +108,6 @@ export function checkHikingConditionsInRange(
       },
       { zone: conditions.timezone }
     );
-    console.log("Moon Illum: ", moonIllumination);
-    console.log("Moon Rise: ", moonriseLocal);
-    console.log("Moon Set: ", moonsetLocal);
-    console.log("Sun Set: ", sunset);
-    console.log("Start Hike Time: ", startHikeTime);
-    console.log("End Hike Time: ", endHikeTime);
-    console.log("\n\n");
 
     const isMoonVisibleBeforeHike =
       moonriseLocal &&
@@ -138,8 +119,6 @@ export function checkHikingConditionsInRange(
       moonriseLocal &&
       moonriseLocal >= startHikeTime &&
       moonriseLocal <= endHikeTime;
-
-
 
     let isGoodForHiking: "Yes" | "No" | "Partial" = "Yes";
     let reason = "The Moon meets visibility and illumination requirements.";

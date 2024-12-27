@@ -3,7 +3,7 @@ import { DateTime } from "luxon";
 
 export interface DateRange {
   from: Date;
-  to: Date;
+  to: Date | undefined;
 }
 
 export interface HikingDate {
