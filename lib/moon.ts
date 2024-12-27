@@ -150,7 +150,9 @@ export function checkHikingConditionsInRange(
     } else if (!isMoonVisibleBeforeHike) {
       isGoodForHiking = "No";
       reason = "The Moon is not visible during the planned hike time.";
-    } else if (moonIllumination < conditions.minIllumination) {
+    } 
+    
+    if (moonIllumination < conditions.minIllumination) {
       isGoodForHiking = "No";
       reason = `The Moon's illumination is below the required ${conditions.minIllumination}%.`;
     }
