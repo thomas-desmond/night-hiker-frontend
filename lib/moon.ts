@@ -33,14 +33,18 @@ export function checkHikingConditionsInRange(
 
     // Get Moon illumination
     const moonIllumination =
-      getMoonIllumination(utcDate.toJSDate()).fraction * 100; // Converts to percentage
+      getMoonIllumination(date.toJSDate()).fraction * 100; // Converts to percentage
 
     // Get Moon times (using UTC input but converting results to local timezone)
+    console.log("\n\n\nThis should be same as moonrise dates ", date.toJSDate());
+    console.log("UTC Date ", utcDate.toJSDate());
     const moonTimes = getMoonTimes(
       utcDate.toJSDate(),
       conditions.latitude,
       conditions.longitude
     );
+
+    console.log(moonTimes)
 
     let moonrise = moonTimes.rise
       ? DateTime.fromJSDate(moonTimes.rise).setZone(conditions.timezone)
@@ -49,7 +53,12 @@ export function checkHikingConditionsInRange(
       ? DateTime.fromJSDate(moonTimes.set).setZone(conditions.timezone)
       : undefined;
 
+      console.log("Rise local: ", moonrise);
+      console.log("Set loal: ", moonset);
+
     // If moonset is before moonrise, get moonset time for the next day
+
+
     if (moonset && moonrise && moonset < moonrise) {
       const nextDayMoonTimes = getMoonTimes(
         utcDate.plus({ days: 1 }).toJSDate(),
@@ -83,8 +92,8 @@ export function checkHikingConditionsInRange(
     // Convert moon times to local timezone
     const moonriseLocal = moonrise
       ? moonrise.setZone(conditions.timezone)
-      : null;
-    const moonsetLocal = moonset ? moonset.setZone(conditions.timezone) : null;
+      : undefined;
+    const moonsetLocal = moonset ? moonset.setZone(conditions.timezone) : undefined;
     // Ensure moonrise or moonset overlaps with hike time
 
     const startHikeTime = DateTime.fromObject(

@@ -53,14 +53,14 @@ export default function HikingDatesContainer({
 
     const [dateRange, setDateRange] = useState<DateRange>({
         from: new Date(),
-        to: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+        to: new Date(new Date().getDate() + 30), // 30 days from now
     });
 
     const [illuminationThreshold, setIlluminationThreshold] = useState(80);
     const [showOnlyGoodDates, setShowOnlyGoodDates] = useState(true);
 
-    const startDate = DateTime.fromJSDate(dateRange.from).setZone("UTC");
-    const endDate = DateTime.fromJSDate(dateRange.to as Date).setZone("UTC");
+    const startDate = DateTime.fromJSDate(dateRange.from).setZone(timezone);
+    const endDate = DateTime.fromJSDate(dateRange.to as Date).setZone(timezone);
 
     // Mock data - replace with your actual data fetching logic
     const hikingDates: HikingDate[] = checkHikingConditionsInRange(
