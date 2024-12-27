@@ -24,8 +24,8 @@ export function SearchControls({
       <div className="grid gap-6 md:grid-cols-2">
         <LocationSearch selected={location} onSelect={onLocationChange} />
         <DateRangePicker
-          initialDateFrom={new Date().toISOString().split('T')[0]}
-          initialDateTo={new Date(new Date().setDate(new Date().getDate() + 30)).toISOString().split('T')[0]}
+          initialDateFrom={new Date()}
+          initialDateTo={new Date(new Date().setDate(new Date().getDate() + 30))}
           onUpdate={(values) => onDateRangeChange(values.range)}
         />
       </div>

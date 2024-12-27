@@ -53,7 +53,7 @@ export default function HikingDatesContainer({
 
     const [dateRange, setDateRange] = useState<DateRange>({
         from: new Date(),
-        to: new Date(new Date().getDate() + 30), // 30 days from now
+        to: new Date(new Date().setDate(new Date().getDate() + 30)), // 30 days from now
     });
 
     const [illuminationThreshold, setIlluminationThreshold] = useState(80);
