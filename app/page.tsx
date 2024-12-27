@@ -82,7 +82,7 @@ export default function Home() {
           onShowGoodDatesChange={setShowOnlyGoodDates}
         />
 
-        <div className="space-y-4">
+        <div className="space-y-6">
           {filteredDates.map((date, index) => (
             <HikingDateCard key={index} date={date} />
           ))}
