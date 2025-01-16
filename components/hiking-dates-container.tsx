@@ -86,16 +86,20 @@ export default function HikingDatesContainer({
           onDateRangeChange={setDateRange}
         />
 
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-6 md:grid-cols-1">
           <IlluminationControls
             illuminationThreshold={illuminationThreshold}
             showOnlyGoodDates={showOnlyGoodDates}
             onIlluminationChange={setIlluminationThreshold}
             onShowGoodDatesChange={setShowOnlyGoodDates}
           />
-          <HikingCalendar />
+          {/* <HikingCalendar /> */}
         </div>
-
+        <div className="flex items-center justify-center space-x-2">
+          <div className="h-px bg-border dark:bg-zinc-700 flex-grow" />
+          <div className="w-2 h-2 rounded-full bg-border dark:bg-zinc-700" />
+          <div className="h-px bg-border dark:bg-zinc-700 flex-grow" />
+        </div>
         <div className="space-y-6">
           {filteredDates.length > 0 ? (
             filteredDates.map((date, index) => (
