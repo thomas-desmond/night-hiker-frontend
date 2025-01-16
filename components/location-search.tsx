@@ -42,6 +42,7 @@ export function LocationSearch({ selected, onSelect }: LocationSearchProps) {
           role="combobox"
           aria-expanded={open}
           className="justify-between"
+          disabled={true}
         >
           <div className="flex items-center gap-2">
             <MapPin className="h-4 w-4" />
