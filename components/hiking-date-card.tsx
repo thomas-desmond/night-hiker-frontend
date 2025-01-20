@@ -3,7 +3,7 @@
 import { Calendar, Clock, Moon } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { HikingDate } from "@/types/hiking";
-import { Timeline } from "@/components/timeline";
+import AstronomicalTimeline from "./astronomical-timeline/timeline";
 
 interface HikingDateCardProps {
   date: HikingDate;
@@ -56,7 +56,7 @@ export function HikingDateCard({ date }: HikingDateCardProps) {
             </div>
         </div>
 
-        <Timeline date={date} />
+        <AstronomicalTimeline date={date} />
 
         {date.isGoodForHiking != "No" && (
           <div className="bg-green-50 dark:bg-green-900/20 p-3 rounded-md border border-green-100 dark:border-green-900">
