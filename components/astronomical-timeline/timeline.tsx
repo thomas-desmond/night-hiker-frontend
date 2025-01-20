@@ -35,7 +35,7 @@ export default function AstronomicalTimeline({date}: AstronomicalTimelineProps) 
       type: "moonset",
       datetime: date.moonSetTime.toJSDate(),
     },
-  ] as const;
+  ];
 
   const [sortedEvents, setSortedEvents] = useState<AstronomicalEvent[]>([]);
 
