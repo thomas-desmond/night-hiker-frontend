@@ -14,15 +14,21 @@ export default async function Home() {
   let timezone = headersList.get("x-vercel-ip-timezone") || "";
 
   return (
-    <div className="min-h-screen bg-background p-6 space-y-8">
-      <LocationHeader />
-      <HikingDatesContainer 
-        latitude={latitude} 
-        longitude={longitude} 
-        city={city} 
-        region={region} 
-        timezone={timezone} 
-      />
+    <div className="min-h-screen bg-gradient-to-b from-background to-background/95">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        <LocationHeader />
+        <div className="rounded-lg border bg-card shadow-sm">
+          <div className="p-6">
+            <HikingDatesContainer 
+              latitude={latitude} 
+              longitude={longitude} 
+              city={city} 
+              region={region} 
+              timezone={timezone} 
+            />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

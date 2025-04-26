@@ -11,62 +11,68 @@ interface HikingDateCardProps {
 
 export function HikingDateCard({ date }: HikingDateCardProps) {
   return (
-    <Card
-      className={`p-6 shadow-lg transition-all hover:shadow-xl ${
+    <Card className="group transition-all hover:ring-2 hover:ring-primary/20">
+      {/* Main Content */}
+      <div className={`p-4 ${
         date.isGoodForHiking === "Yes"
-          ? "border-l-4 border-l-green-500 dark:border-l-green-400 bg-card/50"
+          ? "bg-gradient-to-br from-green-500/10 to-green-500/5"
           : date.isGoodForHiking === "Partial"
-          ? "border-l-4 border-l-yellow-500 dark:border-l-yellow-400 bg-card/50"
-          : "border border-border/50"
-      }`}
-    >
-      <div className="space-y-4">
-        <div className="flex justify-between items-start">
-          <div className="space-y-1">
-            <h3 className="text-2xl font-semibold flex items-center gap-2">
-              <Calendar className="w-6 h-6 text-primary" />
-              {date.date.toFormat("MMMM dd, yyyy")}
+          ? "bg-gradient-to-br from-yellow-500/10 to-yellow-500/5"
+          : "bg-gradient-to-br from-red-500/10 to-red-500/5"
+      }`}>
+        {/* Date and Status */}
+        <div className="flex items-start justify-between mb-3">
+          <div>
+            <h3 className="text-xl font-semibold">
+              {date.date.toFormat("MMM dd")}
             </h3>
-            <p className="text-lg text-muted-foreground flex items-center gap-2">
-              <Moon className="w-5 h-5" />
-              {Math.round(date.moonIllumination)}% illumination
+            <p className="text-sm text-muted-foreground">
+              {date.date.toFormat("yyyy")}
             </p>
           </div>
-            <div className="relative group">
-            <div
-              className={`px-4 py-2 rounded-full text-sm font-medium ${
+          <div
+            className={`px-3 py-1 rounded-full text-xs font-medium ${
               date.isGoodForHiking === "Yes"
                 ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-100"
                 : date.isGoodForHiking === "Partial"
                 ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-100"
                 : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-100"
-              }`}
-            >
-              {date.isGoodForHiking === "Yes"
+            }`}
+          >
+            {date.isGoodForHiking === "Yes"
               ? "Good for Hiking"
               : date.isGoodForHiking === "Partial"
-              ? "Okay at Certain Times"
+              ? "Partially Good"
               : "Not Recommended"}
-            </div>
-            {date.reason && (
-              <div className="z-10 absolute left-0 mt-2 w-64 p-2 bg-white dark:bg-gray-800 text-sm text-muted-foreground border border-border/50 rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
-              {date.reason}
-              </div>
-            )}
-            </div>
+          </div>
         </div>
 
-        <AstronomicalTimeline date={date} />
+        {/* Moon Info */}
+        <div className="flex items-center gap-2 mb-4">
+          <Moon className="w-4 h-4" />
+          <div className="text-sm font-medium">
+            {Math.round(date.moonIllumination)}% illumination
+          </div>
+        </div>
 
-        {date.isGoodForHiking != "No" && (
-          <div className="bg-green-50 dark:bg-green-900/20 p-3 rounded-md border border-green-100 dark:border-green-900">
-            <p className="text-green-800 dark:text-green-100 font-medium flex items-center gap-2">
+        {/* Best Time Window - Only show if good or partial */}
+        {date.isGoodForHiking !== "No" && (
+          <div className="mb-2 text-sm">
+            <div className="font-medium text-muted-foreground mb-1">Best hiking window</div>
+            <div className="flex items-center gap-2 text-base font-semibold">
               <Clock className="w-4 h-4" />
-              Best hiking window: {date.moonRiseTime ? date.moonRiseTime.plus({ hours: 1 }).toFormat("hh:mm a") : "N/A"} - {date.moonSetTime ? date.moonSetTime.minus({ hours: 1 }).toFormat("hh:mm a") : "N/A"}
-              
-            </p>
+              {date.moonRiseTime?.plus({ hours: 1 }).toFormat("hh:mm a")} - {date.moonSetTime?.minus({ hours: 1 }).toFormat("hh:mm a")}
+            </div>
           </div>
         )}
+      </div>
+
+      {/* Timeline - Show on hover for desktop, always visible on mobile */}
+      <div className="hidden sm:group-hover:block border-t">
+        <AstronomicalTimeline date={date} />
+      </div>
+      <div className="block sm:hidden border-t">
+        <AstronomicalTimeline date={date} />
       </div>
     </Card>
   );

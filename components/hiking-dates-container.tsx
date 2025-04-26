@@ -77,39 +77,42 @@ export default function HikingDatesContainer({
     : hikingDates;
 
   return (
-    <div className="min-h-screen bg-background p-6 space-y-8">
-      <main className="max-w-4xl mx-auto space-y-6">
+    <div className="space-y-8">
+      <div className="grid gap-6 md:grid-cols-2">
         <SearchControls
           location={location}
           dateRange={dateRange}
           onLocationChange={setLocation}
           onDateRangeChange={setDateRange}
         />
+        <IlluminationControls
+          illuminationThreshold={illuminationThreshold}
+          showOnlyGoodDates={showOnlyGoodDates}
+          onIlluminationChange={setIlluminationThreshold}
+          onShowGoodDatesChange={setShowOnlyGoodDates}
+        />
+      </div>
 
-        <div className="grid gap-6 md:grid-cols-1">
-          <IlluminationControls
-            illuminationThreshold={illuminationThreshold}
-            showOnlyGoodDates={showOnlyGoodDates}
-            onIlluminationChange={setIlluminationThreshold}
-            onShowGoodDatesChange={setShowOnlyGoodDates}
-          />
-          {/* <HikingCalendar /> */}
+      <div className="relative">
+        <div className="absolute inset-0 flex items-center" aria-hidden="true">
+          <div className="w-full border-t border-muted"></div>
         </div>
-        <div className="flex items-center justify-center space-x-2">
-          <div className="h-px bg-border dark:bg-zinc-700 flex-grow" />
-          <div className="w-2 h-2 rounded-full bg-border dark:bg-zinc-700" />
-          <div className="h-px bg-border dark:bg-zinc-700 flex-grow" />
+        <div className="relative flex justify-center">
+          <span className="bg-card px-3 text-sm text-muted-foreground">Hiking dates</span>
         </div>
-        <div className="space-y-6">
-          {filteredDates.length > 0 ? (
-            filteredDates.map((date, index) => (
-              <HikingDateCard key={index} date={date} />
-            ))
-          ) : (
+      </div>
+
+      <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 max-w-[1600px] mx-auto">
+        {filteredDates.length > 0 ? (
+          filteredDates.map((date, index) => (
+            <HikingDateCard key={index} date={date} />
+          ))
+        ) : (
+          <div className="md:col-span-2 xl:col-span-3">
             <EmptyState />
-          )}
-        </div>
-      </main>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

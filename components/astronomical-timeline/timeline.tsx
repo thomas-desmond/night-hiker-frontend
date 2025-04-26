@@ -20,12 +20,12 @@ export default function AstronomicalTimeline({date}: AstronomicalTimelineProps) 
 
   const events: AstronomicalEvent[] = [
     {
-      type: "sunset",
-      datetime: date.sunsetTime.toJSDate(),
-    },
-    {
       type: "moonrise",
       datetime: date.moonRiseTime.toJSDate(),
+    },
+    {
+      type: "sunset",
+      datetime: date.sunsetTime.toJSDate(),
     },
     {
       type: "moonpeak",
@@ -46,24 +46,15 @@ export default function AstronomicalTimeline({date}: AstronomicalTimelineProps) 
   if (sortedEvents.length === 0) return null;
 
   return (
-    <div className="w-full bg-black rounded-xl text-white px-6 py-4">
-      <div className="relative grid grid-cols-4 gap-4">
-        {/* Timeline line */}
-        <div className="absolute top-[5px] left-0 right-0 h-px bg-white/20" />
-
-        {/* Events */}
+    <div className="p-3 bg-muted/30">
+      <div className="text-xs font-medium text-muted-foreground mb-2">Detailed Timeline</div>
+      <div className="grid grid-cols-2 gap-2">
         {sortedEvents.map((event, index) => (
-          <div key={index} className="flex flex-col items-center pt-0">
-            {/* Dot */}
-            <div className="w-2 h-2 bg-white rounded-full mb-3" />
-
-            {/* Label */}
-            <div className="flex flex-col items-center space-y-1">
-              <div className="flex items-center gap-2 text-sm">
-                <span>{getEventEmoji(event.type)}</span>
-                <span>{getEventLabel(event.type)}</span>
-              </div>
-              <div className="text-sm text-gray-400">
+          <div key={index} className="flex items-center gap-2">
+            <span className="text-base">{getEventEmoji(event.type)}</span>
+            <div className="min-w-0">
+              <div className="text-sm font-medium truncate">{getEventLabel(event.type)}</div>
+              <div className="text-xs text-muted-foreground">
                 {formatTime(event.datetime)}
               </div>
             </div>
