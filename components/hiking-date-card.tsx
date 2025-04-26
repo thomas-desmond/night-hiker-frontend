@@ -67,11 +67,8 @@ export function HikingDateCard({ date }: HikingDateCardProps) {
         )}
       </div>
 
-      {/* Timeline - Show on hover for desktop, always visible on mobile */}
-      <div className="hidden sm:group-hover:block border-t">
-        <AstronomicalTimeline date={date} />
-      </div>
-      <div className="block sm:hidden border-t">
+      {/* Timeline - Always visible */}
+      <div className="border-t">
         <AstronomicalTimeline date={date} />
       </div>
     </Card>
