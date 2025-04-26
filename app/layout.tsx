@@ -20,7 +20,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
         <Providers>
-          <div className="absolute top-4 right-4">
+          <div className="absolute top-4 right-4 z-50">
             <ThemeToggle />
           </div>
           {children}
