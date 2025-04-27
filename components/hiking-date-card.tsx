@@ -42,7 +42,7 @@ export function HikingDateCard({ date }: HikingDateCardProps) {
             {date.isGoodForHiking === "Yes"
               ? "Good for Hiking"
               : date.isGoodForHiking === "Partial"
-              ? "Partially Good"
+              ? "Okay for Hiking"
               : "Not Recommended"}
           </div>
         </div>
@@ -67,8 +67,8 @@ export function HikingDateCard({ date }: HikingDateCardProps) {
         )}
       </div>
 
-      {/* Timeline - Always visible */}
-      <div className="border-t">
+      {/* Timeline */}
+      <div className="border-t p-4">
         <AstronomicalTimeline date={date} />
       </div>
     </Card>
