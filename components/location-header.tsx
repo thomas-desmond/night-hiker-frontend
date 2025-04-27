@@ -1,6 +1,6 @@
 "use client";
 
-import { MapPin } from "lucide-react";
+import { MountainSnow } from "lucide-react";
 
 export function LocationHeader() {
   return (
@@ -8,10 +8,13 @@ export function LocationHeader() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-2">
           <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
-            Night Hiking Guide
+            <div className="flex items-center gap-2">
+              <MountainSnow className="w-10 h-10" />
+              <span>MoonTrail Guide</span>
+            </div>
           </h1>
           <p className="text-lg text-muted-foreground">
-            Find the perfect moonlit nights for your hiking adventures
+            Find the best moonlit hiking nights
           </p>
         </div>
       </div>

@@ -7,8 +7,8 @@ import { ThemeToggle } from '@/components/theme-toggle';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Night Hiking Guide',
-  description: 'Find the best dates for night hiking based on moon illumination',
+  title: 'MoonTrail Guide',
+  description: 'Find the perfect moonlit hiking nights',
 };
 
 export default function RootLayout({
