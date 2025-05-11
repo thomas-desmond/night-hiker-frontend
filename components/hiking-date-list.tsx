@@ -26,7 +26,7 @@ export function HikingDateList({ dates }: HikingDateListProps) {
             <TableRow key={index}>
               <TableCell className="font-medium break-words">
                 <div className="flex flex-col gap-1">
-                  <span>{date.date.toFormat("MM/dd/yy")}</span>
+                  <span>{date.date.toFormat("LLLL d, yyyy")}</span>
                   <div className="flex items-center gap-1 sm:hidden text-sm text-muted-foreground">
                     <Moon className="w-3.5 h-3.5" />
                     <span className="whitespace-nowrap">{Math.round(date.moonIllumination)}%</span>
