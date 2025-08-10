@@ -1,6 +1,6 @@
 "use client";
 
-import { MountainSnow } from "lucide-react";
+import { MountainSnow, Star } from "lucide-react";
 
 export function LocationHeader() {
   return (
@@ -10,11 +10,11 @@ export function LocationHeader() {
           <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
             <div className="flex items-center gap-2">
               <MountainSnow className="w-10 h-10" />
-              <span>MoonTrail Guide</span>
+              <span>Night Hiker</span>
             </div>
           </h1>
           <p className="text-lg text-muted-foreground">
-            Find the best moonlit hiking nights
+            Find the best nights for hiking and star gazing
           </p>
         </div>
       </div>

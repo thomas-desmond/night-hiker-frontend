@@ -14,7 +14,9 @@ export interface HikingDate {
   sunsetTime: DateTime | undefined;
   zenithTime: DateTime | undefined;
   isGoodForHiking: "Yes" | "No" | "Partial";
+  isGoodForStarGazing: "Yes" | "No" | "Partial";
   reason?: string;
+  starGazingReason?: string;
 }
 
 export interface HikingFilters {
@@ -23,3 +25,16 @@ export interface HikingFilters {
   illuminationThreshold: number;
   showOnlyGoodDates: boolean;
 }
+
+export interface StarGazingFilters {
+  location: Location;
+  dateRange: DateRange;
+  maxIllumination: number;
+  preferNoMoon: boolean;
+  showOnlyGoodDates: boolean;
+  preferredStartTime: string; // HH:mm format
+  preferredEndTime: string; // HH:mm format
+}
+
+export type ActivityMode = "hiking" | "starGazing";
+export type StarGazingTimePreference = "early" | "late" | "custom";

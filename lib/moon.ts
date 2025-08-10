@@ -11,20 +11,23 @@ interface NightHikingConditions {
   endHikeTime: string; // HH:mm in local timezone
 }
 
+interface StarGazingConditions {
+  latitude: number;
+  longitude: number;
+  timezone: string;
+  maxIllumination: number; // e.g., 20%
+  preferNoMoon: boolean;
+  startTime: string; // HH:mm in local timezone
+  endTime: string; // HH:mm in local timezone
+}
+
 export function checkHikingConditionsInRange(
   startDate: DateTime,
   endDate: DateTime,
-  conditions: NightHikingConditions
+  conditions: NightHikingConditions,
+  starGazingConditions?: StarGazingConditions
 ): HikingDate[] {
   const results: HikingDate[] = [];
-
-  // // Ensure dates are in the user's local timezone
-  // const localStartDate = startDate.setZone(conditions.timezone, {
-  //   keepLocalTime: true,
-  // });
-  // const localEndDate = endDate.setZone(conditions.timezone, {
-  //   keepLocalTime: true,
-  // });
 
   // Iterate over the range of dates
   for (let date = startDate; date <= endDate; date = date.plus({ days: 1 })) {
@@ -36,15 +39,11 @@ export function checkHikingConditionsInRange(
       getMoonIllumination(date.toJSDate()).fraction * 100; // Converts to percentage
 
     // Get Moon times (using UTC input but converting results to local timezone)
-    console.log("\n\n\nThis should be same as moonrise dates ", date.toJSDate());
-    console.log("UTC Date ", utcDate.toJSDate());
     const moonTimes = getMoonTimes(
       utcDate.toJSDate(),
       conditions.latitude,
       conditions.longitude
     );
-
-    console.log(moonTimes)
 
     let moonrise = moonTimes.rise
       ? DateTime.fromJSDate(moonTimes.rise).setZone(conditions.timezone)
@@ -53,12 +52,7 @@ export function checkHikingConditionsInRange(
       ? DateTime.fromJSDate(moonTimes.set).setZone(conditions.timezone)
       : undefined;
 
-      console.log("Rise local: ", moonrise);
-      console.log("Set loal: ", moonset);
-
     // If moonset is before moonrise, get moonset time for the next day
-
-
     if (moonset && moonrise && moonset < moonrise) {
       const nextDayMoonTimes = getMoonTimes(
         utcDate.plus({ days: 1 }).toJSDate(),
@@ -94,8 +88,8 @@ export function checkHikingConditionsInRange(
       ? moonrise.setZone(conditions.timezone)
       : undefined;
     const moonsetLocal = moonset ? moonset.setZone(conditions.timezone) : undefined;
+    
     // Ensure moonrise or moonset overlaps with hike time
-
     const startHikeTime = DateTime.fromObject(
       {
         year: moonriseLocal?.year,
@@ -145,6 +139,124 @@ export function checkHikingConditionsInRange(
       reason = `The Moon's illumination is below the required ${conditions.minIllumination}%.`;
     }
 
+    // Star gazing logic
+    let isGoodForStarGazing: "Yes" | "No" | "Partial" = "No";
+    let starGazingReason = "Moon illumination is too high for optimal star gazing.";
+
+    // Use user's preferred star gazing time or default to 9 PM - 2 AM
+    const defaultStartHour = 21; // 9 PM
+    const defaultEndHour = 2; // 2 AM
+    
+    const startStarGazingTime = DateTime.fromObject(
+      {
+        year: moonriseLocal?.year,
+        month: moonriseLocal?.month,
+        day: moonriseLocal?.day,
+        hour: starGazingConditions?.startTime ? parseInt(starGazingConditions.startTime.split(':')[0]) : defaultStartHour,
+        minute: starGazingConditions?.startTime ? parseInt(starGazingConditions.startTime.split(':')[1]) : 0,
+      },
+      { zone: conditions.timezone }
+    );
+
+    let endStarGazingTime = DateTime.fromObject(
+      {
+        year: moonriseLocal?.year,
+        month: moonriseLocal?.month,
+        day: moonriseLocal?.day,
+        hour: starGazingConditions?.endTime ? parseInt(starGazingConditions.endTime.split(':')[0]) : defaultEndHour,
+        minute: starGazingConditions?.endTime ? parseInt(starGazingConditions.endTime.split(':')[1]) : 0,
+      },
+      { zone: conditions.timezone }
+    );
+
+    // If end time is before start time, it means it's the next day
+    if (endStarGazingTime < startStarGazingTime) {
+      endStarGazingTime = endStarGazingTime.plus({ days: 1 });
+    }
+
+    // Check if moon is visible during star gazing hours
+    const isMoonVisibleDuringStarGazing = 
+      moonriseLocal &&
+      moonsetLocal &&
+      ((moonriseLocal <= startStarGazingTime && moonsetLocal >= startStarGazingTime) ||
+       (moonriseLocal <= endStarGazingTime && moonsetLocal >= endStarGazingTime) ||
+       (moonriseLocal >= startStarGazingTime && moonriseLocal <= endStarGazingTime));
+
+    // Check if moon rises during star gazing window (this is bad for star gazing)
+    // Normalize moonrise time to the same day as the star gazing window for comparison
+    const normalizedMoonrise = moonriseLocal ? 
+      DateTime.fromObject(
+        {
+          year: startStarGazingTime.year,
+          month: startStarGazingTime.month,
+          day: startStarGazingTime.day,
+          hour: moonriseLocal.hour,
+          minute: moonriseLocal.minute,
+        },
+        { zone: conditions.timezone }
+      ) : undefined;
+
+    // If the normalized moonrise is before the start time, it means it's actually the next day
+    // BUT only if the moonrise time is actually in the early morning hours (before 6 AM)
+    const isEarlyMorningMoonrise = moonriseLocal && moonriseLocal.hour < 6;
+    const adjustedMoonrise = normalizedMoonrise && isEarlyMorningMoonrise && normalizedMoonrise < startStarGazingTime ? 
+      normalizedMoonrise.plus({ days: 1 }) : normalizedMoonrise;
+
+    // Normalize moonset time to the same day as the star gazing window for comparison
+    const normalizedMoonset = moonsetLocal ? 
+      DateTime.fromObject(
+        {
+          year: startStarGazingTime.year,
+          month: startStarGazingTime.month,
+          day: startStarGazingTime.day,
+          hour: moonsetLocal.hour,
+          minute: moonsetLocal.minute,
+        },
+        { zone: conditions.timezone }
+      ) : undefined;
+
+    // If the normalized moonset is before the start time, it means it's actually the next day
+    const adjustedMoonset = normalizedMoonset && normalizedMoonset < startStarGazingTime ? 
+      normalizedMoonset.plus({ days: 1 }) : normalizedMoonset;
+
+    const isMoonRisingDuringStarGazing = 
+      adjustedMoonrise &&
+      adjustedMoonrise >= startStarGazingTime && 
+      adjustedMoonrise <= endStarGazingTime;
+
+    // Check if moon is not visible at all during dark hours
+    // For moon to be completely absent, it must either:
+    // 1. Rise after the end of the star gazing window, OR
+    // 2. Set before the start of the star gazing window
+    const isMoonCompletelyAbsent = 
+      !moonriseLocal || 
+      !moonsetLocal ||
+      (adjustedMoonrise && adjustedMoonrise > endStarGazingTime) || 
+      (adjustedMoonset && adjustedMoonset < startStarGazingTime);
+
+    if (isMoonRisingDuringStarGazing) {
+      isGoodForStarGazing = "No";
+      starGazingReason = `Moon rises at ${adjustedMoonrise?.toFormat("HH:mm")} during your star gazing time - not ideal.`;
+    } else if (isMoonCompletelyAbsent) {
+      isGoodForStarGazing = "Yes";
+      starGazingReason = "Moon is not visible during dark hours - perfect for star gazing!";
+    } else if (isMoonVisibleDuringStarGazing && moonIllumination <= 20) {
+      isGoodForStarGazing = "Partial";
+      starGazingReason = "Moon is visible but illumination is low - decent for star gazing.";
+    } else if (isMoonVisibleDuringStarGazing && moonIllumination <= 50) {
+      isGoodForStarGazing = "Partial";
+      starGazingReason = "Moon is visible and illumination is moderate - acceptable for star gazing.";
+    } else if (isMoonVisibleDuringStarGazing) {
+      isGoodForStarGazing = "No";
+      starGazingReason = `Moon is visible during your star gazing time with ${Math.round(moonIllumination)}% illumination - too bright for optimal star gazing.`;
+    } else if (moonIllumination <= 20) {
+      isGoodForStarGazing = "Partial";
+      starGazingReason = "Moon illumination is low but moon may be visible - decent for star gazing.";
+    } else if (moonIllumination <= 50) {
+      isGoodForStarGazing = "Partial";
+      starGazingReason = "Moon illumination is moderate - acceptable for star gazing.";
+    }
+
     results.push({
       date, 
       moonIllumination,
@@ -152,8 +264,10 @@ export function checkHikingConditionsInRange(
       moonSetTime: moonset,
       sunsetTime: sunset,
       isGoodForHiking,
+      isGoodForStarGazing,
       zenithTime: moonZenith,
       reason,
+      starGazingReason,
     });
   }
 
