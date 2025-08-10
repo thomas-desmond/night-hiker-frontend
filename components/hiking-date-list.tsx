@@ -62,7 +62,7 @@ export function HikingDateList({ dates, mode }: HikingDateListProps) {
           <TableRow>
             <TableHead className="w-[40%] sm:w-auto">Date</TableHead>
             <TableHead className="hidden sm:table-cell">Illumination</TableHead>
-            <TableHead className="hidden md:table-cell">Best Time Window</TableHead>
+            <TableHead className="hidden md:table-cell">Rise/Set Times</TableHead>
             <TableHead className="w-[60%] sm:w-auto">{activityLabel} Quality</TableHead>
             <TableHead className="hidden sm:table-cell text-right">Details</TableHead>
           </TableRow>
@@ -94,10 +94,13 @@ export function HikingDateList({ dates, mode }: HikingDateListProps) {
                     <Clock className="w-4 h-4" />
                     <div className="flex flex-col">
                       {date.moonRiseTime && (
-                        <span>Rise: {date.moonRiseTime.toFormat("HH:mm")}</span>
+                        <span>Moonrise: {date.moonRiseTime.toFormat("hh:mm a")}</span>
                       )}
                       {date.moonSetTime && (
-                        <span>Set: {date.moonSetTime.toFormat("HH:mm")}</span>
+                        <span>Moonset: {date.moonSetTime.toFormat("hh:mm a")}</span>
+                      )}
+                      {date.sunsetTime && (
+                        <span>Sunset: {date.sunsetTime.toFormat("hh:mm a")}</span>
                       )}
                     </div>
                   </div>

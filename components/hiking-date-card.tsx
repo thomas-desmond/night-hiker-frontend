@@ -94,30 +94,30 @@ export function HikingDateCard({ date, mode }: HikingDateCardProps) {
           </div>
         </div>
 
-        {/* Best Time Window - Only show if good or partial */}
+        {/* Rise/Set Times - Only show if good or partial */}
         {(isGoodForActivity === "Yes" || isGoodForActivity === "Partial") && (
           <div className="space-y-2 mb-4">
             <div className="flex items-center gap-2 text-sm">
               <Clock className="w-4 h-4" />
-              <span className="font-medium">Best Time Window:</span>
+              <span className="font-medium">Rise/Set Times:</span>
             </div>
             <div className="pl-6 space-y-1 text-sm text-muted-foreground">
               {date.moonRiseTime && (
                 <div className="flex items-center gap-2">
                   <Sunrise className="w-3 h-3" />
-                  <span>Moonrise: {date.moonRiseTime.toFormat("HH:mm")}</span>
+                  <span>Moonrise: {date.moonRiseTime.toFormat("hh:mm a")}</span>
                 </div>
               )}
               {date.moonSetTime && (
                 <div className="flex items-center gap-2">
                   <Sunrise className="w-3 h-3 rotate-180" />
-                  <span>Moonset: {date.moonSetTime.toFormat("HH:mm")}</span>
+                  <span>Moonset: {date.moonSetTime.toFormat("hh:mm a")}</span>
                 </div>
               )}
               {date.sunsetTime && (
                 <div className="flex items-center gap-2">
                   <Sunrise className="w-3 h-3" />
-                  <span>Sunset: {date.sunsetTime.toFormat("HH:mm")}</span>
+                  <span>Sunset: {date.sunsetTime.toFormat("hh:mm a")}</span>
                 </div>
               )}
             </div>
