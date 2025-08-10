@@ -4,7 +4,8 @@ import { LocationHeader } from "@/components/location-header";
 import { SearchControls } from "@/components/search-controls";
 import { IlluminationControls } from "@/components/illumination-controls";
 import { HikingDateCard } from "@/components/hiking-date-card";
-import type { HikingDate, DateRange } from "@/types/hiking";
+import { ActivityModeToggle } from "@/components/activity-mode-toggle";
+import type { HikingDate, DateRange, ActivityMode } from "@/types/hiking";
 import { DateTime } from "luxon";
 import type { Location } from "@/types/location";
 
@@ -30,12 +31,16 @@ export default function MainDisplay({
 
   const [illuminationThreshold, setIlluminationThreshold] = useState(80);
   const [showOnlyGoodDates, setShowOnlyGoodDates] = useState(true);
+  const [mode, setMode] = useState<ActivityMode>("hiking");
 
   const filteredDates = showOnlyGoodDates
-    ? hikingDates.filter(
-        (date) =>
-          date.isGoodForHiking === "Yes" || date.isGoodForHiking === "Partial"
-      )
+    ? hikingDates.filter((date) => {
+        if (mode === "hiking") {
+          return date.isGoodForHiking === "Yes" || date.isGoodForHiking === "Partial";
+        } else {
+          return date.isGoodForStarGazing === "Yes" || date.isGoodForStarGazing === "Partial";
+        }
+      })
     : hikingDates;
 
   return (
@@ -50,6 +55,8 @@ export default function MainDisplay({
           onDateRangeChange={setDateRange}
         />
 
+        <ActivityModeToggle mode={mode} onModeChange={setMode} />
+
         <IlluminationControls
           illuminationThreshold={illuminationThreshold}
           showOnlyGoodDates={showOnlyGoodDates}
@@ -59,7 +66,7 @@ export default function MainDisplay({
 
         <div className="space-y-4">
           {filteredDates.map((date, index) => (
-            <HikingDateCard key={index} date={date} />
+            <HikingDateCard key={index} date={date} mode={mode} />
           ))}
         </div>
       </main>
